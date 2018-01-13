@@ -2,7 +2,7 @@
 #include <geometry_msgs/Twist.h>
 #include <serial/serial.h>
 #include <ros/console.h>
-#include <serial.h>
+#include <serial/serial.h>
 #include <ros/console.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int8.h>
@@ -10,7 +10,6 @@
 
 
 //global variables
-serial::Serial ser
 int linVelcmd = 0;
 int angVelcmd = 0;
 int beepcmd = 0;
@@ -18,7 +17,7 @@ int rlsmotorcmd = 0;
 int sensorcalib = 0;
 
 // Velocity commands callback function
-void callbackbeepCommands(const geometry_msgs::Twist& vel){
+void callbackmotorCommands(const geometry_msgs::Twist& vel){
 	linVelcmd = (int)(vel.linear.x);
 	angVelcmd = (int)(vel.angular.z * CartRadius);
 }
@@ -31,13 +30,9 @@ void callbackbeepCommands(const std_msgs::Int8& msg){
 
 int main(int argc, char **argv){
 
-	const char cmdSetup[] = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};	//Enter wire clt mode
-	char cmdSend[] = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
-	char cmdrecieve [8];		//recieve info
-
 	//Initialize ROS components
 	ros::init(argc,argv,"driver_node");		// Node name
-	ros::NodeHandle nh:
+	ros::NodeHandle nh;
 	ros::Subscriber velSub = nh.subscribe("kart_velocity",1,callbackmotorCommands);		// Subscribe to "kart_velocity" topic
 	ros::Subscriber beepSub = nh.subscribe("beep_command",1,callbackbeepCommands);		// Subscribe to "beep_command"
 	ros::Publisher voltPub = nh.advertise<std_msgs::Float32>("batteryInfo",1);	// Publish to "batteryInfo"
@@ -73,9 +68,9 @@ int main(int argc, char **argv){
 
 		checkReceivedData();
 
-		ros::spinOnce():
+		ros::spinOnce();
 		rate.sleep();
 	}
 
-	return 0
+	return 0;
 }

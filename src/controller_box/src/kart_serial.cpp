@@ -1,17 +1,20 @@
-#include kart_serial.h
-#include <serial.h>
-#include <ros/ros.h>
-#include <ros/console.h>
+#include "kart_serial.h"
+#include <serial/serial.h>
+
+serial::Serial ser;
+const unsigned char cmdSetup[13] = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};	//Enter wire clt mode
+unsigned char cmdSend[13] = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
+unsigned char cmdrecieve [8];		//recieve info
 
 //Setup serial communication
-int serialSetup(unsigned char *data){
+int serialSetup(const unsigned char *data){
 	try{
 		ser.setPort("/dev/ttyUSB0");
 		ser.setBaudrate(115200);
 		serial::Timeout to =serial::Timeout::simpleTimeout(1000);
 		ser.setTimeout(to);
 		ser.open();
-	}catch(serial::IOExecption& e){
+	}catch(serial::IOException& e){
 		ROS_INFO("unable to open port");
 		return 0;
 	}if(ser.isOpen()){
@@ -22,7 +25,7 @@ int serialSetup(unsigned char *data){
 }
 
 //Set the parity bit
-int parityBit(volatile unsigned char *data, int length){
+int parityBit(volatile uint8_t *data, int length){
 
 	char XorVal = 0;
 	for (int i = 0; i < length; i++){
@@ -57,7 +60,7 @@ void checkReceivedData(){
 		}
 		case YawVoltInfo:{
 			ROS_INFO("reporting yaw and voltage");
-      voltPub.data = cmdrecieve[]
+      //voltPub.data = ((cmdrecieve[votlage_H]<<8) + cmdrecieve[voltage_L])/1000.0;
 		}
 		case PwOFF:{
 			ROS_INFO("reporting power off");

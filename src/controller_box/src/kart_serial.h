@@ -1,6 +1,10 @@
-
 #ifndef __KART_SERIAL_H_INCLUDED
 #define __KART_SERIAL_H_INCLUDED
+
+#include <serial/serial.h>
+#include <ros/ros.h>
+#include <ros/console.h>
+
 
 // Send protocol bit position
 #define SOP		0	//SOP
@@ -62,6 +66,12 @@
 
 void checkReceivedData();
 int parityBit(volatile unsigned char *data, int length);
-int serialSetup(unsigned char *data);
+int serialSetup(const unsigned char *data);
+
+
+extern serial::Serial ser;
+extern const unsigned char cmdSetup[13];	//Enter wire clt mode
+extern unsigned char cmdSend[13];		//Send command
+extern unsigned char cmdrecieve[8];		//recieve info
 
 #endif
