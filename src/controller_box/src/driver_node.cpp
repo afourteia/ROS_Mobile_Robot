@@ -30,7 +30,7 @@ void callbackbeepCommands(const std_msgs::Int8& msg){
 
 int main(int argc, char **argv){
 
-	//Initialize ROS components
+	//Initialize ROS node
 	ros::init(argc,argv,"driver_node");		// Node name
 	ros::NodeHandle nh;
 	ros::Subscriber velSub = nh.subscribe("kart_velocity",1,callbackmotorCommands);		// Subscribe to "kart_velocity" topic
