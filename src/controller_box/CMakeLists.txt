@@ -134,7 +134,7 @@ add_library(${PROJECT_NAME}
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/controller_box_node.cpp)\
+# add_executable(${PROJECT_NAME}_node src/controller_box_node.cpp)
 add_executable(driver_node src/driver_node.cpp src/kart_serial.cpp)
 
 ## Rename C++ executable without prefix
