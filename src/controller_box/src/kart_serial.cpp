@@ -2,60 +2,8 @@
 
 //Setup serial communication
 UKART::UKART(){
-	cmdSetup = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};	//Enter wire clt mode
-  cmdSend = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
-	// Send protocol bit position
-	 int SOP = 0;	//SOP
-	 int CMD = 1;	//Command type bit
-	 int LEN = 2;	//
-	 int CTL_BYT = 3;	//
-	int ANGVELH = 6;	//Angular velocity MSB
-	 int ANGVELL = 7;	//Angular velocity LSB
-	 int LINVELH = 8;	//Linear velocity MSB
-	 int LINVELL = 9;	//Linear velocity LSB
-	 int XOR = 12;	//Parity bit
-
-	// Receieve protocl bit position
-	 int votlage_H = 5;
-	 int voltage_L = 6;
-	 int Err_4 = 3;
-	 int Err_3 = 4;
-	 int Err_2 = 5;
-	 int Err_1 = 6;
-	 int LeftCurrent_H   = 3;
-	 int LeftCurrent_L   = 4;
-	 int RightCurrent_H  = 5;
-	 int RightCurrent_L  = 6;
-	 int LeftTemp_H  = 3;
-	 int LeftTemp_L  = 4;
-	 int RightTemp_H = 5;
-	 int RightTemp_L = 6;
-
-	//Data recieved
-	 unsigned char	WCEMA				= 0xAD;	// Enter wire ctl mode ack
-	 unsigned char WCExMA			= 0xAF;	// Exit wire ctl mode ack
-	 unsigned char SpInfo			= 0xE6;	// Speed info
-	 unsigned char CurInfo 		= 0xE4;	// Current info
-	 unsigned char AltInfo			= 0xE3;	// Altitude info
-	 unsigned char TempInfo		= 0xE5;	// Temperature info
-	 unsigned char SSpInfo			= 0xE2;	// Setting speed info
-	 unsigned char YawVoltInfo	= 0xE1;	// Yaw and Voltage info
-	 unsigned char PwOFF				= 0xE7;	// Power off detected
-	 unsigned char ODOInfo			= 0xE8;	// Odometry info
-	 unsigned char VerInfo			= 0xE9;	// Version info
-	 unsigned char ChipIDInfo	= 0xEA;	// Chip ID info
-	 unsigned char ErrorInfo		= 0xEB;	// Error info
-	 unsigned char GACA				= 0xA3;	// Gyro & ACC calibration cmd ack
-
-	//Possible Command values
-	 unsigned char BEEP_CTL_BIT 		=0x08	;//Beep command
-	 unsigned char MOTOR_RELEASE_BIT	=0X10;	//Motor release command
-
-	//Erro Code bit position
-	// needs work
-
-	//constants
-	 CartRadius=271.462;	//robot axle radius
+	voltPub=0.0;
+	CartRadius=271.462;	//robot axle radius
 	try{
 		serial::Serial ser;
 		ser.setPort("/dev/ttyUSB0");
@@ -65,14 +13,14 @@ UKART::UKART(){
 		ser.open();
 	}catch(serial::IOException& e){
 		ROS_INFO("unable to open port");
-		throw serial::IOException("Unable to connect");
+		throw std::invalid_argument( "Unable to open the usb port (likely its the wrong usb name or its busy)" );
 	}
 	if(ser.isOpen()){
 		ROS_INFO("Serial Port Initialized");
 		ser.write(cmdSetup,13);
 	}
 	else{
-		throw serial::IOException("Serial Port Not Open");
+		throw std::invalid_argument( "Unable to open the Serial Communication port to the UKART" );
 	}
 }
 
@@ -87,9 +35,7 @@ int UKART::parityBit(volatile uint8_t *data, int length){
 
 // Read the serial comm and fetch the data
 void UKART::checkReceivedData(){
-
-	ser.read(&cmdrecieve,8);
-
+	ser.read(&cmdrecieve[0],8);
 	switch (cmdrecieve[CMD]) {
 		case WCEMA:
 			ROS_INFO("Enter wire ctl mode");
@@ -157,6 +103,6 @@ void UKART::beep(int& beepcmd){
 }
 
 void UKART::send(){
-	cmdSend[XOR] = parityBit(&cmdSend, 12);
-	ser.write(&cmdSend,13);
+	cmdSend[XOR] = parityBit(&cmdSend[0], 12);
+	ser.write(&cmdSend[0],13);
 }
