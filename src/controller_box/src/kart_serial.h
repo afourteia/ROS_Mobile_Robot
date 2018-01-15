@@ -12,6 +12,8 @@ public:
   void checkReceivedData();
   double voltPub = 0.0;
   void setVelocity(int linVelcmd, int angVelcmd);
+  void UKART::beep(int& beepcmd);
+  void UKART::send();
 
 private:
   // Send protocol bit position
