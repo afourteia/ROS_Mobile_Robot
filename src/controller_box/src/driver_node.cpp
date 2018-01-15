@@ -40,33 +40,25 @@ int main(int argc, char **argv){
 	ros::Publisher currentPub = nh.advertise<std_msgs::Float32>("currentInfo",1);	// Publish to "currentInfo"
 	ros::Publisher tempPub	= nh.advertise<std_msgs::Float32>("tempInfo",1);	// Publish to "tempInfo"
 
-	// Setup serial comm and check if valid
-	if(!serialSetup(&cmdSetup[0]))	return 0;
+	UKART kart();
 
 	ros::Rate rate(10);
+
+	std_msgs::Float32 voltagePubValue;
 
 	while(ros::ok()){
 
 		//Set the velocity commands
-		cmdSend[LINVELL] = 0xff & linVelcmd;
-		cmdSend[LINVELH] = 0xff & (linVelcmd >> 8);
-		cmdSend[ANGVELL] = 0xff & angVelcmd;
-		cmdSend[ANGVELH] = 0xff & (angVelcmd >> 8);
-
+		kart.setVelocity(linVelcmd,angVelcmd);
 		// Check for other commands
-		if(beepcmd > 0){
-					cmdSend[CTL_BYTE]	= BEEP_CTL_BIT;
-					beepcmd--;
-		}else{
-			cmdSend[CTL_BYTE] = 0;
-		}
+		kart.beep(beepcmd);
 
 		//Set the parity bit
-		cmdSend[XOR] = parityBit(&cmdSend[0], 12);
+		kart.send();
 
-		ser.write(&cmdSend[0],13);
-
-		checkReceivedData();
+		kart.checkReceivedData();
+		voltagePubValue.data = kart.voltPub;
+		voltPub.publish(voltagePubValue);
 
 		ros::spinOnce();
 		rate.sleep();

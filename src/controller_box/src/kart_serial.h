@@ -5,73 +5,72 @@
 #include <ros/ros.h>
 #include <ros/console.h>
 
+class UKART{
+public:
+  UKART();
+  int parityBit(volatile unsigned char *data, int length);
+  void checkReceivedData();
+  double voltPub = 0.0;
+  void setVelocity(int linVelcmd, int angVelcmd);
 
-// Send protocol bit position
-#define SOP		0	//SOP
-#define CMD		1	//Command type bit
-#define LEN		2	//
-#define CTL_BYTE	3	//
-#define ANGVELH		6	//Angular velocity MSB
-#define ANGVELL		7	//Angular velocity LSB
-#define LINVELH		8	//Linear velocity MSB
-#define LINVELL		9	//Linear velocity LSB
-#define XOR		12	//Parity bit
+private:
+  // Send protocol bit position
+  const int SOP = 0;	//SOP
+  const int CMD = 1;	//Command type bit
+  const int LEN = 2;	//
+  const int CTL_BYT = 3;	//
+  const int ANGVELH = 6;	//Angular velocity MSB
+  const int ANGVELL = 7;	//Angular velocity LSB
+  const int LINVELH = 8;	//Linear velocity MSB
+  const int LINVELL = 9;	//Linear velocity LSB
+  const int XOR = 12;	//Parity bit
 
+  // Receieve protocl bit position
+  const int votlage_H = 5;
+  const int voltage_L = 6;
+  const int Err_4 = 3;
+  const int Err_3 = 4;
+  const int Err_2 = 5;
+  const int Err_1 = 6;
+  const int LeftCurrent_H   = 3;
+  const int LeftCurrent_L   = 4;
+  const int RightCurrent_H  = 5;
+  const int RightCurrent_L  = 6;
+  const int LeftTemp_H  = 3;
+  const int LeftTemp_L  = 4;
+  const int RightTemp_H = 5;
+  const int RightTemp_L = 6;
 
-// Receieve protocl bit position
-#define votlage_H 5
-#define voltage_L 6
-#define Err_4 3
-#define Err_3 4
-#define Err_2 5
-#define Err_1 6
-#define LeftCurrent_H   3
-#define LeftCurrent_L   4
-#define RightCurrent_H  5
-#define RightCurrent_L  6
-#define LeftTemp_H  3
-#define LeftTemp_L  4
-#define RightTemp_H 5
-#define RightTemp_L 6
+  //Data recieved
+  const unsigned char	WCEMA				= 0xAD;	// Enter wire ctl mode ack
+  const unsigned char WCExMA			= 0xAF;	// Exit wire ctl mode ack
+  const unsigned char SpInfo			= 0xE6;	// Speed info
+  const unsigned char CurInfo 		= 0xE4;	// Current info
+  const unsigned char AltInfo			= 0xE3;	// Altitude info
+  const unsigned char TempInfo		= 0xE5;	// Temperature info
+  const unsigned char SSpInfo			= 0xE2;	// Setting speed info
+  const unsigned char YawVoltInfo	= 0xE1;	// Yaw and Voltage info
+  const unsigned char PwOFF				= 0xE7;	// Power off detected
+  const unsigned char ODOInfo			= 0xE8;	// Odometry info
+  const unsigned char VerInfo			= 0xE9;	// Version info
+  const unsigned char ChipIDInfo	= 0xEA;	// Chip ID info
+  const unsigned char ErrorInfo		= 0xEB;	// Error info
+  const unsigned char GACA				= 0xA3;	// Gyro & ACC calibration cmd ack
 
+  //Possible Command values
+  const unsigned char BEEP_CTL_BIT 		=0x08	;//Beep command
+  const unsigned char MOTOR_RELEASE_BIT	=0X10;	//Motor release command
 
-//Data recieved
-#define	WCEMA				0xAD	// Enter wire ctl mode ack
-#define WCExMA			0xAF	// Exit wire ctl mode ack
-#define SpInfo			0xE6	// Speed info
-#define CurInfo 		0xE4	// Current info
-#define AltInfo			0xE3	// Altitude info
-#define TempInfo		0xE5	// Temperature info
-#define SSpInfo			0xE2	// Setting speed info
-#define YawVoltInfo	0xE1	// Yaw and Voltage info
-#define PwOFF				0xE7	// Power off detected
-#define ODOInfo			0xE8	// Odometry info
-#define VerInfo			0xE9	// Version info
-#define ChipIDInfo	0xEA	// Chip ID info
-#define ErrorInfo		0xEB	// Error info
-#define GACA				0xA3	// Gyro & ACC calibration cmd ack
+  //Erro Code bit position
+  // needs work
 
-//Possible Command values
-#define BEEP_CTL_BIT 		0x08	//Beep command
-#define MOTOR_RELEASE_BIT	0X10	//Motor release command
+  //constants
+  const double  CartRadius=271.462;	//robot axle radius
 
-//Erro Code bit position
-// needs work
+  const unsigned char cmdSetup[13] = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};	//Enter wire clt mode
+  unsigned char cmdSend[13] = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
+  unsigned char cmdrecieve [8];		//recieve info
+};
 
-//constants
-#define  CartRadius	271.462	//robot axle radius
-
-
-//Functions
-
-void checkReceivedData();
-int parityBit(volatile unsigned char *data, int length);
-int serialSetup(const unsigned char *data);
-
-
-extern serial::Serial ser;
-extern const unsigned char cmdSetup[13];	//Enter wire clt mode
-extern unsigned char cmdSend[13];		//Send command
-extern unsigned char cmdrecieve[8];		//recieve info
 
 #endif

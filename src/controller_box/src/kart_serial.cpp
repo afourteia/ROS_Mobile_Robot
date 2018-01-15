@@ -1,14 +1,9 @@
 #include "kart_serial.h"
-#include <serial/serial.h>
-
-serial::Serial ser;
-const unsigned char cmdSetup[13] = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};	//Enter wire clt mode
-unsigned char cmdSend[13] = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
-unsigned char cmdrecieve [8];		//recieve info
 
 //Setup serial communication
-int serialSetup(const unsigned char *data){
+UKART::UKART(){
 	try{
+		serial::Serial ser;
 		ser.setPort("/dev/ttyUSB0");
 		ser.setBaudrate(115200);
 		serial::Timeout to =serial::Timeout::simpleTimeout(1000);
@@ -16,17 +11,19 @@ int serialSetup(const unsigned char *data){
 		ser.open();
 	}catch(serial::IOException& e){
 		ROS_INFO("unable to open port");
-		return 0;
-	}if(ser.isOpen()){
+		throw serial::IOException("Unable to connect");
+	}
+	if(ser.isOpen()){
 		ROS_INFO("Serial Port Initialized");
-		ser.write(data,13);
-		return 1;
-	}else	return 0;
+		ser.write(cmdSetup,13);
+	}
+	else{
+		throw serial::IOException("Serial Port Not Open");
+	}
 }
 
 //Set the parity bit
-int parityBit(volatile uint8_t *data, int length){
-
+int UKART::parityBit(volatile uint8_t *data, int length){
 	char XorVal = 0;
 	for (int i = 0; i < length; i++){
 		XorVal ^= *data++;
@@ -35,9 +32,9 @@ int parityBit(volatile uint8_t *data, int length){
 }
 
 // Read the serial comm and fetch the data
-void checkReceivedData(){
+void UKART::checkReceivedData(){
 
-	ser.read(&cmdrecieve[0],8);
+	ser.read(&cmdrecieve,8);
 
 	switch (cmdrecieve[CMD]) {
 		case WCEMA:
@@ -63,7 +60,7 @@ void checkReceivedData(){
 			break;
 		case YawVoltInfo:
 			ROS_INFO("reporting yaw and voltage");
-      //voltPub.data = ((cmdrecieve[votlage_H]<<8) + cmdrecieve[voltage_L])/1000.0;
+      voltPub = ((cmdrecieve[votlage_H]<<8) + cmdrecieve[voltage_L])/1000.0;
 			break;
 		case PwOFF:
 			ROS_INFO("reporting power off");
@@ -87,4 +84,25 @@ void checkReceivedData(){
 			ROS_INFO("Kart Controller has nothing to report");
 			break;
 	};
+}
+
+void UKART::setVelocity(int linVelcmd, int angVelcmd){
+	cmdSend[LINVELL] = 0xff & linVelcmd;
+	cmdSend[LINVELH] = 0xff & (linVelcmd >> 8);
+	cmdSend[ANGVELL] = 0xff & angVelcmd;
+	cmdSend[ANGVELH] = 0xff & (angVelcmd >> 8);
+}
+
+void UKART::beep(int& beepcmd){
+	if(beepcmd > 0){
+				cmdSend[CTL_BYTE]	= BEEP_CTL_BIT;
+				beepcmd--;
+	}else{
+		cmdSend[CTL_BYTE] = 0;
+	}
+}
+
+void UKART::send(){
+	cmdSend[XOR] = parityBit(&cmdSend, 12);
+	ser.write(&cmdSend,13);
 }
