@@ -15,6 +15,7 @@ int angVelcmd = 0;
 int beepcmd = 0;
 int rlsmotorcmd = 0;
 int sensorcalib = 0;
+UKART kart;
 
 // Velocity commands callback function
 void callbackmotorCommands(const geometry_msgs::Twist& vel){
@@ -40,7 +41,7 @@ int main(int argc, char **argv){
 	ros::Publisher currentPub = nh.advertise<std_msgs::Float32>("currentInfo",1);	// Publish to "currentInfo"
 	ros::Publisher tempPub	= nh.advertise<std_msgs::Float32>("tempInfo",1);	// Publish to "tempInfo"
 
-	UKART kart();
+
 
 	ros::Rate rate(10);
 
