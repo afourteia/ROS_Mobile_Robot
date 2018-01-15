@@ -19,7 +19,7 @@ int sensorcalib = 0;
 // Velocity commands callback function
 void callbackmotorCommands(const geometry_msgs::Twist& vel){
 	linVelcmd = (int)(vel.linear.x);
-	angVelcmd = (int)(vel.angular.z * CartRadius);
+	angVelcmd = (int)(vel.angular.z * kart.CartRadius);
 }
 
 // Beep commands callback function
