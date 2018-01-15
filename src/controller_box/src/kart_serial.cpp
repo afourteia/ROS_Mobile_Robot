@@ -40,46 +40,51 @@ void checkReceivedData(){
 	ser.read(&cmdrecieve[0],8);
 
 	switch (cmdrecieve[CMD]) {
-
-		case WCEMA: ROS_INFO("Enter wire ctl mode");
-		case WCExMA: ROS_INFO("Exit wire ctl mode");
-		case SpInfo:{
+		case WCEMA:
+			ROS_INFO("Enter wire ctl mode");
+			break;
+		case WCExMA:
+			ROS_INFO("Exit wire ctl mode");
+			break;
+		case SpInfo:
 			ROS_INFO("reporting speed");
-		}
-		case CurInfo:{
+			break;
+		case CurInfo:
 			ROS_INFO("reporting current");
-		}
-		case AltInfo:{
+			break;
+		case AltInfo:
 			ROS_INFO("reporting altitude");
-		}
-		case TempInfo:{
+			break;
+		case TempInfo:
 			ROS_INFO("reporting temperature");
-		}
-		case SSpInfo:{
+			break;
+		case SSpInfo:
 			ROS_INFO("reporting speed setting");
-		}
-		case YawVoltInfo:{
+			break;
+		case YawVoltInfo:
 			ROS_INFO("reporting yaw and voltage");
       //voltPub.data = ((cmdrecieve[votlage_H]<<8) + cmdrecieve[voltage_L])/1000.0;
-		}
-		case PwOFF:{
+			break;
+		case PwOFF:
 			ROS_INFO("reporting power off");
-		}
-		case ODOInfo:{
+			break;
+		case ODOInfo:
 			ROS_INFO("reporting odometry");
-		}
-		case VerInfo:{
+			break;
+		case VerInfo:
 			ROS_INFO("reporting version");
-		}
-		case ChipIDInfo:{
+			break;
+		case ChipIDInfo:
 			ROS_INFO("reporting chip ID");
-		}
-		case ErrorInfo:{
+			break;
+		case ErrorInfo:
 			ROS_INFO("reporting error");
-		}
-		case GACA:{
+			break;
+		case GACA:
 			ROS_INFO("reporting gyro calibration ack");
-		}
-		default: ROS_INFO("Kart Controller has nothing to report");
-	}
+			break;
+		default:
+			ROS_INFO("Kart Controller has nothing to report");
+			break;
+	};
 }
