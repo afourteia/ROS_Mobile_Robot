@@ -13,12 +13,21 @@ class UKART{
     void checkReceivedData();
     void setVelocity(int linVelcmd, int angVelcmd);
     void beep(int& beepcmd);
+    void calibrateIMU(int& imuCalibcmd);
+    void clearError(int& clrErrorcmd);
+    void releaseMotor(int& rlsmotorcmd);
+    void isConnected(int& serCondition);
     void send();
-    double voltPub;
+
+
+    uint16_t voltPub;
     double CartRadius;
 
   private:
-    unsigned char cmdSetup[13]  = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};		//Enter wire clt mode
+    unsigned char cmdSetup[13]  = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF6};		//Enter wire clt mode
+    unsigned char cmdCalib[13]  = { 0x55, 0xA2, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}     // IMU calibration command
+    unsigned char cmdErClr[13]  = { 0x55, 0xA6, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}     // Clear error command
+    //unsigned char cmdExit[13]   =
     unsigned char cmdSend[13]   = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
     unsigned char cmdrecieve[8];		//recieve info
     serial::Serial ser;
@@ -51,24 +60,24 @@ class UKART{
   #define RightTemp_L 6
 
   //Data recieved
-  #define WCEMA 0xAD	// Enter wire ctl mode ack
-  #define WCExMA 0xAF	// Exit wire ctl mode ack
-  #define SpInfo			 0xE6// Speed info
-  #define CurInfo 		 0xE4	// Current info
-  #define AltInfo			 0xE3	// Altitude info
-  #define TempInfo		 0xE5	// Temperature info
-  #define  SSpInfo			 0xE2	// Setting speed info
-  #define  YawVoltInfo	 0xE1	// Yaw and Voltage info
-  #define PwOFF				 0xE7	// Power off detected
-  #define  ODOInfo			 0xE8	// Odometry info
-  #define  VerInfo		 0xE9	// Version info
-  #define  ChipIDInfo	 0xEA	// Chip ID info
-  #define  ErrorInfo 		 0xEB	// Error info
-  #define  GACA 				 0xA3	// Gyro & ACC calibration cmd ack
+  #define WCEMA         0xAD	// Enter wire ctl mode ack
+  #define WCExMA        0xAF	// Exit wire ctl mode ack
+  #define SpInfo		    0xE6  // Speed info
+  #define CurInfo 	    0xE4	// Current info
+  #define AltInfo		    0xE3	// Altitude info
+  #define TempInfo	    0xE5	// Temperature info
+  #define SSpInfo		    0xE2	// Setting speed info
+  #define YawVoltInfo   0xE1	// Yaw and Voltage info
+  #define PwOFF			    0xE7	// Power off detected
+  #define ODOInfo		    0xE8	// Odometry info
+  #define VerInfo	      0xE9	// Version info
+  #define ChipIDInfo    0xEA	// Chip ID info
+  #define ErrorInfo 	  0xEB	// Error info
+  #define GACA          0xA3	// Gyro & ACC calibration cmd ack
 
   //Possible Command values
-  #define BEEP_CTL_BIT 		0x08	//Beep command
-  #define  MOTOR_RELEASE_BIT	0X10	//Motor release command
+  #define BEEP_CTL_BIT 		    0x08	//Beep command
+  #define MOTOR_RELEASE_BIT   0X10	//Motor release command
 
 
 #endif

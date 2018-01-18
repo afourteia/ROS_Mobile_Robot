@@ -111,6 +111,35 @@ void UKART::beep(int& beepcmd){
 	}
 }
 
+void UKART::calibrateIMU(int& imuCalibcmd){
+	if(imuCalibcmd > 0){
+		ser.write(&cmdCalib[0],13);
+		imuCalibcmd--;
+	}
+}
+
+void UKART::clearError(int& clrErrorcmd){
+	if(clrErrorcmd > 0){
+		ser.write(&cmdErClr[0],13);
+		clrErrorcmd--;
+	}
+}
+
+void UKART::releaseMotor(int& rlsmotorcmd){
+	if(rlsmotorcmd > 0){
+		cmdSend[CTL_BYTE]	= MOTOR_RELEASE_BIT;
+		rlsmotorcmd--;
+	}
+}
+
+void UKART::isConnected(int& serCondition){
+	if(ser.isOpen()){
+		serCondition = 1;
+	}else{
+		serCondition = 0;
+	}
+}
+
 void UKART::send(){
 	cmdSend[XOR] = parityBit(&cmdSend[0], 12);
 	//ROS_INFO("Sending data");
