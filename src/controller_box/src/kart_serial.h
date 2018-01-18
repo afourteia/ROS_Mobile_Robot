@@ -20,9 +20,11 @@ class UKART{
     void send();
 
 
-    uint16_t eee;
-    double voltPub;
+
+
     double CartRadius;
+
+
 
   private:
     unsigned char cmdSetup[13]  = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF6};		//Enter wire clt mode
@@ -31,7 +33,30 @@ class UKART{
     //unsigned char cmdExit[13]   =
     unsigned char cmdSend[13]   = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
     unsigned char cmdrecieve[8];		//recieve info
-    serial::Serial ser;
+
+    serial::Serial ser;       // Serial object
+
+    // variables to store information recieved from controller box
+    uint16_t  voltageInfo;
+    uint16_t  yawInfo;
+    uint16_t  mtrRPML;
+    uint16_t  mtrRPMR;
+    uint16_t  speedlinGoal;
+    uint16_t  speedAngGoal;
+    uint16_t  currentLInfo;
+    uint16_t  currentRInfo;
+    uint16_t  pitchInfo;
+    uint16_t  rollInfo;
+    uint16_t  tempLInfo;
+    uint16_t  tempRInfo;
+    uint32_t  odomInfo;
+    uint32_t  versionInfo;
+    uint32_t  chipID;
+    uint32_t  errorInfo;
+    uint8_t   ctlExitAck;
+    uint8_t   ctlEnterAck;
+    uint8_t   imuCalibAck;
+    uint8_t   powerOFF;
 };
   // Send protocol bit position
   #define SOP  0	//SOP
