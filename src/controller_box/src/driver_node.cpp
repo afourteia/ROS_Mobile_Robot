@@ -16,7 +16,7 @@ int linVelcmd = 0;
 int angVelcmd = 0;
 int beepcmd = 0;
 int imuCalibcmd = 0;
-int clrErrorcmd = 0
+int clrErrorcmd = 0;
 int rlsmotorcmd = 0;
 int sensorcalib = 0;
 UKART kart;
@@ -38,7 +38,7 @@ void callbackcalibrateCommands(const std_msgs::Int8& msg){
 }
 
 // Clear error callback function
-void callbackcalibrateCommands(const std_msgs::Int8& msg){
+void callbackclearerrorCommands(const std_msgs::Int8& msg){
 	clrErrorcmd = msg.data;
 }
 
@@ -55,9 +55,9 @@ int main(int argc, char **argv){
 	ros::NodeHandle nh;
 	ros::Subscriber velSub = nh.subscribe("kart_velocity",1,callbackmotorCommands);		// Subscribe to "kart_velocity" topic
 	ros::Subscriber beepSub = nh.subscribe("beep_command",1,callbackbeepCommands);		// Subscribe to "beep_command"
-	ros::Subscriber calibrate = nh.subscribe("IMU_calibrate_command",1,callbackcalibrateCommands); 	// Subscribe to "IMU_calibrate_command"
-	ros::Subscriber calibrate = nh.subscribe("motor_rls_command",1,callbackmotorreleaseCommands); 	// Subscribe to "motor_rls_command"
-	ros::Subscriber calibrate = nh.subscribe("clear_error_command",1,callbackclearerrorCommands); 	// Subscribe to "clear_error_command"
+	ros::Subscriber calibrateSub = nh.subscribe("IMU_calibrate_command",1,callbackcalibrateCommands); 	// Subscribe to "IMU_calibrate_command"
+	ros::Subscriber releaseMotorSub = nh.subscribe("motor_rls_command",1,callbackmotorreleaseCommands); 	// Subscribe to "motor_rls_command"
+	ros::Subscriber clearErrorSub = nh.subscribe("clear_error_command",1,callbackclearerrorCommands); 	// Subscribe to "clear_error_command"
 	ros::Publisher voltPub = nh.advertise<std_msgs::Float32>("batteryInfo",1);	// Publish to "batteryInfo"
 	ros::Publisher errorPub = nh.advertise<std_msgs::Int8>("errorInfo",1);		// Publish to "errorInfo"
 	ros::Publisher currentPub = nh.advertise<std_msgs::Float32>("currentInfo",1);	// Publish to "currentInfo"

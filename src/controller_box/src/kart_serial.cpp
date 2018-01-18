@@ -3,7 +3,7 @@
 
 //Setup serial communication
 UKART::UKART(){
-	voltPub=0.0;
+	voltPub=0;
 	CartRadius=271.462;	//robot axle radius
 	//serial::Serial ser;
 	try{
