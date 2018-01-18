@@ -18,8 +18,8 @@ class UKART{
     double CartRadius;
 
   private:
-    unsigned char cmdSetup[13] = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};	//Enter wire clt mode
-    unsigned char cmdSend[13] = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command;
+    unsigned char cmdSetup[13]  = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0};		//Enter wire clt mode
+    unsigned char cmdSend[13]   = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
     unsigned char cmdrecieve[8];		//recieve info
     serial::Serial ser;
 };
@@ -37,10 +37,10 @@ class UKART{
   // Receieve protocl bit position
   #define votlage_H  5
   #define voltage_L  6
-  #define Err_4  3
-  #define Err_3  4
-  #define Err_2  5
-  #define Err_1  6
+  #define info_4  3
+  #define info_3  4
+  #define info_2  5
+  #define info_1  6
   #define LeftCurrent_H    3
   #define LeftCurrent_L    4
   #define RightCurrent_H   5
