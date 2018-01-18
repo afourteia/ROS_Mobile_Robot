@@ -4,7 +4,7 @@ Created on Wed Jan 17 17:24:48 2018
 
 @author: joell
 """
-from PyQt5 import QtCore, QtGui, uic  # Import the PyQt4 module we'll need
+from PyQt5 import QtCore, QtGui, uic, QtWidgets  # Import the PyQt4 module we'll need
 import sys  # We need sys so that we can pass argv to QApplication
 
 
@@ -12,7 +12,7 @@ something = 1
 
 #suscribe from out here and write to a local variable to update on the screen
 
-class MainScreen(QtGui.QMainWindow):
+class MainScreen(QtWidgets.QMainWindow):
     def __init__(self):
         global something
         '''
@@ -60,7 +60,7 @@ class MainScreen(QtGui.QMainWindow):
 
 
 # start main ros nodes here
-app = QtGui.QApplication(sys.argv)  # A new instance of QApplication
+app = QtWidgets.QApplication(sys.argv)  # A new instance of QApplication
 form = MainScreen()  # We set the form to be our ExampleApp (design)
 form.show()  # Show the form
 app.exec_()  # and execute the app
