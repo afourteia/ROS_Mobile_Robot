@@ -35,62 +35,91 @@ int UKART::parityBit(volatile uint8_t *data, int length){
 	return XorVal;
 }
 
-// Read the serial comm and fetch the data
-void UKART::checkReceivedData(){
+// Read the serial comm and assign the data to the public variables
+// It sets a publish flag as well
+uint8_t UKART::checkReceivedData(){
 	ROS_DEBUG("Checking recieved data");
 	ser.read(&cmdrecieve[0],8);
 	switch (cmdrecieve[CMD]) {
 		case WCEMA:
 			ROS_DEBUG("Enter wire ctl mode");
-			
+			return WCEMA;
 			break;
 		case WCExMA:
 			ROS_DEBUG("Exit wire ctl mode");
+			return WCExMA;
 			break;
 		case SpInfo:
-			ROS_DEBUG("reporting speed");
-			//ROS_DEBUG("Left %i", (cmdrecieve[info_4]<<8) + cmdrecieve[info_3]);
-			//ROS_DEBUG("Right %i", (cmdrecieve[info_2]<<8) + cmdrecieve[info_1]);
+			ROS_DEBUG("reporting motor RPM");
+			mtrRPML = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+			mtrRPMR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+			return SpInfo;
 			break;
 		case CurInfo:
 			ROS_DEBUG("reporting current");
+			currentL = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+			currentR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+			return CurInfo;
 			break;
-		case AltInfo:
+		case AttdInfo:
 			ROS_DEBUG("reporting altitude");
+			pitch = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+			roll = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+			return AttdInfo;
 			break;
 		case TempInfo:
 			ROS_DEBUG("reporting temperature");
+			tempL = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+			tempR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+			return TempInfo;
 			break;
 		case SSpInfo:
 			ROS_DEBUG("reporting speed setting");
-			//ROS_DEBUG("Linear %i",  ((cmdrecieve[info_4]<<8) + cmdrecieve[info_3]));
-			//ROS_DEBUG("Angular %i", (cmdrecieve[info_2]<<8) + cmdrecieve[info_1]);
+			speedlinGoal = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+			speedAngGoal = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+			return SSpInfo;
 			break;
 		case YawVoltInfo:
 			ROS_DEBUG("reporting yaw and voltage");
-      voltPub = ((cmdrecieve[votlage_H]<<8) + cmdrecieve[voltage_L])/1000.0;
+			yaw = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+			voltage = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+			return YawVoltInfo;
 			break;
 		case PwOFF:
 			ROS_DEBUG("reporting power off");
+			return PwOFF;
 			break;
 		case ODOInfo:
 			ROS_DEBUG("reporting odometry");
+			odom = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+			 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+			return ODOInfo;
 			break;
 		case VerInfo:
 			ROS_DEBUG("reporting version");
+			version = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+			 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+			return VerInfo;
 			break;
 		case ChipIDInfo:
 			ROS_DEBUG("reporting chip ID");
+			chipID = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+			 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+			return ChipIDInfo;
 			break;
 		case ErrorInfo:
 			ROS_DEBUG("reporting error");
-			//ROS_DEBUG("%i", (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16) + (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]));
+			error = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+			 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+			return ErrorInfo;
 			break;
 		case GACA:
 			ROS_DEBUG("reporting gyro calibration ack");
+			return GACA;
 			break;
 		default:
 			ROS_DEBUG("Kart Controller has nothing to report");
+			return 0xFF; // nothing to report
 			break;
 	};
 }

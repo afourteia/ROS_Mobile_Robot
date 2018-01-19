@@ -9,6 +9,7 @@
 #include <std_msgs/UInt32.h>
 #include <std_msgs/UInt16.h>
 #include "kart_serial.h"
+#include ""
 
 
 //global variables
@@ -19,7 +20,8 @@ int imuCalibcmd = 0;
 int clrErrorcmd = 0;
 int rlsmotorcmd = 0;
 int sensorcalib = 0;
-UKART kart;
+uint8_t publishFlag = 0;
+
 
 // Velocity commands callback function
 void callbackmotorCommands(const geometry_msgs::Twist& vel){
@@ -65,6 +67,8 @@ int main(int argc, char **argv){
 	ros::Publisher SerCondPub	= nh.advertise<std_msgs::Int8>("serCondition",1);	// Publish to "serCondition"
 
 
+	UKART kart;
+
 
 	ros::Rate rate(10);
 
@@ -80,8 +84,9 @@ int main(int argc, char **argv){
 		//Set the parity bit
 		kart.send();
 
-		kart.checkReceivedData();
+		publishFlag = kart.checkReceivedData();
 		voltagePubValue.data = kart.voltPub;
+		publish();
 		voltPub.publish(voltagePubValue);
 
 		ros::spinOnce();
