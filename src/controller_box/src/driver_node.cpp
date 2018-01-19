@@ -85,8 +85,61 @@ int main(int argc, char **argv){
 		kart.send();
 
 		publishFlag = kart.checkReceivedData();
-		voltagePubValue.data = kart.voltPub;
-		publish();
+
+		switch (publishFlag) {
+			case WCEMA:
+				break;
+			case WCExMA:
+				break;
+			case SpInfo:;
+				mtrRPML
+				mtrRPMR
+				break;
+			case CurInfo:
+				currentL = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+				currentR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				break;
+			case AttdInfo:
+				pitch = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+				roll = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				break;
+			case TempInfo:
+				tempL = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+				tempR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				break;
+			case SSpInfo:
+				speedlinGoal = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+				speedAngGoal = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				break;
+			case YawVoltInfo:
+				yaw = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+				voltage = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				break;
+			case PwOFF:
+				break;
+			case ODOInfo:
+				odom = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				break;
+			case VerInfo:
+				version = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				break;
+			case ChipIDInfo:
+				chipID = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				break;
+			case ErrorInfo:
+				error = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
+				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				break;
+			case GACA:
+				return GACA;
+				break;
+			default:
+				break;
+		};
+
 		voltPub.publish(voltagePubValue);
 
 		ros::spinOnce();

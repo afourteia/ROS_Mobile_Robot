@@ -35,6 +35,7 @@ class UKART{
     uint16_t  tempL;
     uint16_t  tempR;
     uint32_t  odom;
+
     uint32_t  version;
     uint32_t  chipID;
     uint32_t  error;
@@ -43,7 +44,7 @@ class UKART{
     uint8_t   imuCalibAck;
     uint8_t   powerOFF;
 
-    double CartRadius;
+    const double CartRadius = 271.462;	//robot axle radius;
 
 
 

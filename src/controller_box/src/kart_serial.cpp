@@ -3,9 +3,7 @@
 
 //Setup serial communication
 UKART::UKART(){
-	voltPub=0;
-	CartRadius=271.462;	//robot axle radius
-	//serial::Serial ser;
+
 	try{
 		ser.setPort("/dev/ttyUSB0");
 		ser.setBaudrate(115200);
@@ -23,6 +21,7 @@ UKART::UKART(){
 	}else{
 		throw std::invalid_argument( "Unable to send serial setup cmd to UKART" );
 	}
+
 }
 
 //Set the parity bit
