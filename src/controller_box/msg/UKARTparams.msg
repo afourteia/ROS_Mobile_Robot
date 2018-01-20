@@ -1,12 +1,12 @@
 # Paramters provided by the Ukart controller box
-
-LeftnRight  mtrRPM;
-LeftnRight  current;
-LeftnRight  temp;
-uint16_t  voltage;
-uint16_t  yaw;
-uint16_t  speedlinGoal;
-uint16_t  speedAngGoal;
-uint16_t  pitch;
-uint16_t  roll;
-uint32_t  odom;
+# uses the leftnRight.msg message data type
+LeftnRight mtrRPM
+LeftnRight current
+LeftnRight temp
+int16 voltage
+int16 yaw
+int16 speedlinGoal
+int16 speedAngGoal
+int16 pitch
+int16 roll
+int32 odom

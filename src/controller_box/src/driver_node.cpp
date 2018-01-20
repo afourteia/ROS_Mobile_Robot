@@ -9,7 +9,7 @@
 #include <std_msgs/UInt32.h>
 #include <std_msgs/UInt16.h>
 #include "kart_serial.h"
-#include ""
+#include "controller_box/UKARTparams.h"
 
 
 //global variables
@@ -22,6 +22,8 @@ int rlsmotorcmd = 0;
 int sensorcalib = 0;
 uint8_t publishFlag = 0;
 
+//global kart object
+UKART kart;
 
 // Velocity commands callback function
 void callbackmotorCommands(const geometry_msgs::Twist& vel){
@@ -50,6 +52,8 @@ void callbackmotorreleaseCommands(const std_msgs::Int8& msg){
 }
 
 
+
+
 int main(int argc, char **argv){
 
 	//Initialize ROS node
@@ -67,12 +71,12 @@ int main(int argc, char **argv){
 	ros::Publisher SerCondPub	= nh.advertise<std_msgs::Int8>("serCondition",1);	// Publish to "serCondition"
 
 
-	UKART kart;
 
-
-	ros::Rate rate(10);
+	ros::Rate rate(30);
 
 	std_msgs::Float32 voltagePubValue;
+
+	controller_box::UKARTparams ukartParameters;
 
 	while(ros::ok()){
 
@@ -92,46 +96,42 @@ int main(int argc, char **argv){
 			case WCExMA:
 				break;
 			case SpInfo:;
-				mtrRPML
-				mtrRPMR
+				kart.mtrRPML;
+				kart.mtrRPMR;
 				break;
 			case CurInfo:
-				currentL = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
-				currentR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				kart.currentL;
+				kart.currentR;
 				break;
 			case AttdInfo:
-				pitch = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
-				roll = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				kart.pitch;
+				kart.roll;
 				break;
 			case TempInfo:
-				tempL = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
-				tempR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				kart.tempL;
+				kart.tempR;
 				break;
 			case SSpInfo:
-				speedlinGoal = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
-				speedAngGoal = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				kart.speedlinGoal;
+				kart.speedAngGoal;
 				break;
 			case YawVoltInfo:
-				yaw = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
-				voltage = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+				kart.yaw;
+				kart.voltage;
 				break;
 			case PwOFF:
 				break;
 			case ODOInfo:
-				odom = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
-				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				kart.odom;
 				break;
 			case VerInfo:
-				version = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
-				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				kart.version;
 				break;
 			case ChipIDInfo:
-				chipID = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
-				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				kart.chipID;
 				break;
 			case ErrorInfo:
-				error = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
-				 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+				kart.error;
 				break;
 			case GACA:
 				return GACA;

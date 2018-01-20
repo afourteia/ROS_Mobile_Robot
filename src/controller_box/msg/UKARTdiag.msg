@@ -1,9 +1,9 @@
 # Some diagnostics provided by the Ukart controller box
 
-uint32_t  version;
-uint32_t  chipID;
-uint32_t  error;
-uint8_t   ctlExitAck;
-uint8_t   ctlEnterAck;
-uint8_t   imuCalibAck;
-uint8_t   powerOFF;
+int32  version
+int32  chipID
+int32  error
+int8   ctlExitAck
+int8   ctlEnterAck
+int8   imuCalibAck
+int8   powerOFF

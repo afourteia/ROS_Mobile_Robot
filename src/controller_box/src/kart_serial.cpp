@@ -25,7 +25,7 @@ UKART::UKART(){
 }
 
 //Set the parity bit
-int UKART::parityBit(volatile uint8_t *data, int length){
+uint8_t UKART::parityBit(volatile uint8_t *data, int length){
 	ROS_DEBUG("Setting Parity Bit");
 	char XorVal = 0;
 	for (int i = 0; i < length; i++){
