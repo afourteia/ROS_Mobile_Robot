@@ -108,8 +108,10 @@ uint8_t UKART::checkReceivedData(){
 			break;
 		case ErrorInfo:
 			ROS_DEBUG("reporting error");
+			ROS_INFO("reporting error ");
 			error = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
 			 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
+			ROS_INFO_STREAM(error);
 			return ErrorInfo;
 			break;
 		case GACA:

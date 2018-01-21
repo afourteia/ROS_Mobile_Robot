@@ -51,8 +51,42 @@ void callbackmotorreleaseCommands(const std_msgs::Int8& msg){
 	rlsmotorcmd = msg.data;
 }
 
+void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo){
 
+	ukartinfo.ctlEnterAck = kart.ctlEnterAck;
+	ukartinfo.ctlExitAck = kart.ctlExitAck;
 
+	ukartinfo.mtrRPM.L = kart.mtrRPML;
+	ukartinfo.mtrRPM.R = kart.mtrRPMR;
+
+	ukartinfo.current.L = kart.currentL;
+	ukartinfo.current.R = kart.currentR;
+
+	ukartinfo.pitch = kart.pitch;
+	ukartinfo.roll = kart.roll;
+
+	ukartinfo.temp.L = kart.tempL;
+	ukartinfo.temp.R = kart.tempR;
+
+	ukartinfo.speedlinGoal = kart.speedlinGoal;
+	ukartinfo.speedAngGoal = kart.speedAngGoal;
+
+	ukartinfo.yaw = kart.yaw;
+	ukartinfo.voltage = kart.voltage;
+
+	ukartinfo.powerOFF = kart.powerOFF;
+
+	ukartinfo.odom = kart.odom;
+
+	ukartinfo.version = kart.version;
+
+	ukartinfo.chipID = kart.chipID;
+
+	ukartinfo.error = kart.error;
+
+	ukartinfo.imuCalibAck = kart.imuCalibAck;
+
+}
 
 int main(int argc, char **argv){
 
@@ -64,19 +98,16 @@ int main(int argc, char **argv){
 	ros::Subscriber calibrateSub = nh.subscribe("IMU_calibrate_command",1,callbackcalibrateCommands); 	// Subscribe to "IMU_calibrate_command"
 	ros::Subscriber releaseMotorSub = nh.subscribe("motor_rls_command",1,callbackmotorreleaseCommands); 	// Subscribe to "motor_rls_command"
 	ros::Subscriber clearErrorSub = nh.subscribe("clear_error_command",1,callbackclearerrorCommands); 	// Subscribe to "clear_error_command"
-	ros::Publisher voltPub = nh.advertise<std_msgs::Float32>("batteryInfo",1);	// Publish to "batteryInfo"
-	ros::Publisher errorPub = nh.advertise<std_msgs::Int8>("errorInfo",1);		// Publish to "errorInfo"
-	ros::Publisher currentPub = nh.advertise<std_msgs::Float32>("currentInfo",1);	// Publish to "currentInfo"
-	ros::Publisher tempPub	= nh.advertise<std_msgs::Float32>("tempInfo",1);	// Publish to "tempInfo"
-	ros::Publisher SerCondPub	= nh.advertise<std_msgs::Int8>("serCondition",1);	// Publish to "serCondition"
+
+	ros::Publisher UKARTpub = nh.advertise<controller_box::UKARTparams>("Ukart_parameters",1);	// Publish to "Ukart_parameters"
+	//ros::Publisher UKARTdiagPub = nh.advertise<controller_box::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
 
 
+	ros::Rate rate(50); // Contoller box sends at 40hz
 
-	ros::Rate rate(30);
 
-	std_msgs::Float32 voltagePubValue;
-
-	controller_box::UKARTparams ukartParameters;
+	controller_box::UKARTparams ukartinfo;
+	//controller_box::UKARTdiag ukartInfo;
 
 	while(ros::ok()){
 
@@ -90,57 +121,14 @@ int main(int argc, char **argv){
 
 		publishFlag = kart.checkReceivedData();
 
-		switch (publishFlag) {
-			case WCEMA:
-				break;
-			case WCExMA:
-				break;
-			case SpInfo:;
-				kart.mtrRPML;
-				kart.mtrRPMR;
-				break;
-			case CurInfo:
-				kart.currentL;
-				kart.currentR;
-				break;
-			case AttdInfo:
-				kart.pitch;
-				kart.roll;
-				break;
-			case TempInfo:
-				kart.tempL;
-				kart.tempR;
-				break;
-			case SSpInfo:
-				kart.speedlinGoal;
-				kart.speedAngGoal;
-				break;
-			case YawVoltInfo:
-				kart.yaw;
-				kart.voltage;
-				break;
-			case PwOFF:
-				break;
-			case ODOInfo:
-				kart.odom;
-				break;
-			case VerInfo:
-				kart.version;
-				break;
-			case ChipIDInfo:
-				kart.chipID;
-				break;
-			case ErrorInfo:
-				kart.error;
-				break;
-			case GACA:
-				return GACA;
-				break;
-			default:
-				break;
-		};
+		if(!(publishFlag == 0xFF)){
+			loadROSKARTmessage(ukartinfo);
+			UKARTpub.publish(ukartinfo);
+		}
 
-		voltPub.publish(voltagePubValue);
+
+
+		//voltPub.publish(voltagePubValue);
 
 		ros::spinOnce();
 		rate.sleep();

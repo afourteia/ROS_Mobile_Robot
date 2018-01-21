@@ -22,27 +22,29 @@ class UKART{
 
     // variables to store information recieved from controller box\
     // should be private members
-    uint16_t  voltage = 0;
-    uint16_t  yaw = 0;
+    // Please refer to the Ukart serial API sheet provided by Passion Mobilty
+
+    uint8_t   ctlEnterAck = 0;
+    uint8_t   ctlExitAck = 0;
     uint16_t  mtrRPML = 0;
     uint16_t  mtrRPMR = 0;
-    uint16_t  speedlinGoal = 0;
-    uint16_t  speedAngGoal = 0;
     uint16_t  currentL = 0;
     uint16_t  currentR = 0;
     uint16_t  pitch = 0;
     uint16_t  roll = 0;
     uint16_t  tempL = 0;
     uint16_t  tempR = 0;
+    uint16_t  speedlinGoal = 0;
+    uint16_t  speedAngGoal = 0;
+    uint16_t  yaw = 0;
+    uint16_t  voltage = 0;
+    uint8_t   powerOFF = 0;
     uint32_t  odom = 0;
-
     uint32_t  version = 0;
     uint32_t  chipID = 0;
     uint32_t  error = 0;
-    uint8_t   ctlExitAck = 0;
-    uint8_t   ctlEnterAck = 0;
     uint8_t   imuCalibAck = 0;
-    uint8_t   powerOFF = 0;
+
 
     const double CartRadius = 271.462;	//robot axle radius;
 
