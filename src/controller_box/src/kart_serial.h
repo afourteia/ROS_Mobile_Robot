@@ -9,14 +9,15 @@
 class UKART{
   public:
     UKART();
-    uint8_t parityBit(volatile unsigned char *data, int length);
-    uint8_t checkReceivedData();
+    int parityBit(volatile unsigned char *data, int length);
+    int checkReceivedData();
     void setVelocity(int linVelcmd, int angVelcmd);
     void beep(int& beepcmd);
     void calibrateIMU(int& imuCalibcmd);
     void clearError(int& clrErrorcmd);
     void releaseMotor(int& rlsmotorcmd);
-    void isConnected(int& serCondition);
+    void changeControlMode(int& cntlrModecmd);
+    int isConnected();
     void send();
 
 
@@ -24,20 +25,19 @@ class UKART{
     // should be private members
     // Please refer to the Ukart serial API sheet provided by Passion Mobilty
 
-    uint8_t   ctlEnterAck = 0;
-    uint8_t   ctlExitAck = 0;
-    uint16_t  mtrRPML = 0;
-    uint16_t  mtrRPMR = 0;
-    uint16_t  currentL = 0;
-    uint16_t  currentR = 0;
-    uint16_t  pitch = 0;
-    uint16_t  roll = 0;
-    uint16_t  tempL = 0;
-    uint16_t  tempR = 0;
-    uint16_t  speedlinGoal = 0;
-    uint16_t  speedAngGoal = 0;
-    uint16_t  yaw = 0;
-    uint16_t  voltage = 0;
+    int8_t   ctlmodeACK = 0;     // For both exit and enter acknowledgements
+    int16_t  mtrRPML = 0;
+    int16_t  mtrRPMR = 0;
+    int16_t  currentL = 0;
+    int16_t  currentR = 0;
+    int16_t  pitch = 0;
+    int16_t  roll = 0;
+    int16_t  tempL = 0;
+    int16_t  tempR = 0;
+    int16_t  speedlinGoal = 0;
+    int16_t  speedAngGoal = 0;
+    int16_t  yaw = 0;
+    int16_t  voltage = 0;
     uint8_t   powerOFF = 0;
     uint32_t  odom = 0;
     uint32_t  version = 0;
@@ -51,10 +51,10 @@ class UKART{
 
 
   private:
-    unsigned char cmdSetup[13]  = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF6};		//Enter wire clt mode
+    unsigned char cmdSetup[13]  = { 0x55, 0xAC, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF6};		//Enter wire ctrl mode
     unsigned char cmdCalib[13]  = { 0x55, 0xA2, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};    // IMU calibration command
-    unsigned char cmdErClr[13]  = { 0x55, 0xA6, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};     // Clear error command
-    //unsigned char cmdExit[13]   =
+    unsigned char cmdErClr[13]  = { 0x55, 0xA6, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};    // Clear error command
+    unsigned char cmdExCtrl[13] = { 0x55, 0xAE, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF4};    // Exit wire ctrl mode
     unsigned char cmdSend[13]   = { 0x55, 0xAB, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF7};		//Send command
     unsigned char cmdrecieve[8];		//recieve info
 

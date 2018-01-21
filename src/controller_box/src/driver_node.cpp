@@ -19,6 +19,7 @@ int beepcmd = 0;
 int imuCalibcmd = 0;
 int clrErrorcmd = 0;
 int rlsmotorcmd = 0;
+int cntlrModecmd = 0;
 int sensorcalib = 0;
 uint8_t publishFlag = 0;
 
@@ -51,13 +52,15 @@ void callbackmotorreleaseCommands(const std_msgs::Int8& msg){
 	rlsmotorcmd = msg.data;
 }
 
+void callbackWireControlModeCommands(const std_msgs::Int8& msg){
+	cntlrModecmd = msg.data;
+}
 void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo){
 
-	ukartinfo.ctlEnterAck = kart.ctlEnterAck;
-	ukartinfo.ctlExitAck = kart.ctlExitAck;
+	ukartinfo.ctlMode = kart.ctlmodeACK;
 
-	ukartinfo.mtrRPM.L = kart.mtrRPML;
-	ukartinfo.mtrRPM.R = kart.mtrRPMR;
+	ukartinfo.mtrRPM.L =  kart.mtrRPML;
+	ukartinfo.mtrRPM.R =  kart.mtrRPMR;
 
 	ukartinfo.current.L = kart.currentL;
 	ukartinfo.current.R = kart.currentR;
@@ -86,6 +89,8 @@ void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo){
 
 	ukartinfo.imuCalibAck = kart.imuCalibAck;
 
+	ukartinfo.serCondition = kart.isConnected();
+
 }
 
 int main(int argc, char **argv){
@@ -98,6 +103,8 @@ int main(int argc, char **argv){
 	ros::Subscriber calibrateSub = nh.subscribe("IMU_calibrate_command",1,callbackcalibrateCommands); 	// Subscribe to "IMU_calibrate_command"
 	ros::Subscriber releaseMotorSub = nh.subscribe("motor_rls_command",1,callbackmotorreleaseCommands); 	// Subscribe to "motor_rls_command"
 	ros::Subscriber clearErrorSub = nh.subscribe("clear_error_command",1,callbackclearerrorCommands); 	// Subscribe to "clear_error_command"
+
+	ros::Subscriber changeControlModeSub = nh.subscribe("Wire_control_mode",1,callbackWireControlModeCommands); 	// Subscribe to "clear_error_command"
 
 	ros::Publisher UKARTpub = nh.advertise<controller_box::UKARTparams>("Ukart_parameters",1);	// Publish to "Ukart_parameters"
 	//ros::Publisher UKARTdiagPub = nh.advertise<controller_box::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
@@ -115,6 +122,14 @@ int main(int argc, char **argv){
 		kart.setVelocity(linVelcmd,angVelcmd);
 		// Check for other commands
 		kart.beep(beepcmd);
+		kart.releaseMotor(rlsmotorcmd); //this should be called after kart.beep()
+
+		kart.calibrateIMU(imuCalibcmd);
+		kart.clearError(clrErrorcmd);
+
+		kart.changeControlMode(cntlrModecmd);
+
+
 
 		//Set the parity bit
 		kart.send();
@@ -125,7 +140,6 @@ int main(int argc, char **argv){
 			loadROSKARTmessage(ukartinfo);
 			UKARTpub.publish(ukartinfo);
 		}
-
 
 
 		//voltPub.publish(voltagePubValue);

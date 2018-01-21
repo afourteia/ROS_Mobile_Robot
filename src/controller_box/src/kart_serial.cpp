@@ -25,7 +25,7 @@ UKART::UKART(){
 }
 
 //Set the parity bit
-uint8_t UKART::parityBit(volatile uint8_t *data, int length){
+int UKART::parityBit(volatile uint8_t *data, int length){
 	ROS_DEBUG("Setting Parity Bit");
 	char XorVal = 0;
 	for (int i = 0; i < length; i++){
@@ -36,16 +36,20 @@ uint8_t UKART::parityBit(volatile uint8_t *data, int length){
 
 // Read the serial comm and assign the data to the public variables
 // It sets a publish flag as well
-uint8_t UKART::checkReceivedData(){
-	ROS_DEBUG("Checking recieved data");
+int UKART::checkReceivedData(){
+	ROS_DEBUG("Checking Receieved data");
 	ser.read(&cmdrecieve[0],8);
 	switch (cmdrecieve[CMD]) {
 		case WCEMA:
 			ROS_DEBUG("Enter wire ctl mode");
+			ROS_INFO("reporting error ");
+			ctlmodeACK = 1;
 			return WCEMA;
 			break;
 		case WCExMA:
 			ROS_DEBUG("Exit wire ctl mode");
+			ROS_INFO("Exit wire ctl mode ");
+			ctlmodeACK = -1;
 			return WCExMA;
 			break;
 		case SpInfo:
@@ -85,7 +89,7 @@ uint8_t UKART::checkReceivedData(){
 			return YawVoltInfo;
 			break;
 		case PwOFF:
-			ROS_DEBUG("reporting power off");
+			ROS_INFO("reporting power off");
 			return PwOFF;
 			break;
 		case ODOInfo:
@@ -108,14 +112,12 @@ uint8_t UKART::checkReceivedData(){
 			break;
 		case ErrorInfo:
 			ROS_DEBUG("reporting error");
-			ROS_INFO("reporting error ");
 			error = (cmdrecieve[info_4]<<24) + (cmdrecieve[info_3]<<16)
 			 	+ (cmdrecieve[info_2]<<8) + (cmdrecieve[info_1]);
-			ROS_INFO_STREAM(error);
 			return ErrorInfo;
 			break;
 		case GACA:
-			ROS_DEBUG("reporting gyro calibration ack");
+			ROS_INFO("reporting gyro calibration ack");
 			return GACA;
 			break;
 		default:
@@ -135,15 +137,25 @@ void UKART::setVelocity(int linVelcmd, int angVelcmd){
 
 void UKART::beep(int& beepcmd){
 	if(beepcmd > 0){
-				cmdSend[CTL_BYTE]	= BEEP_CTL_BIT;
-				beepcmd--;
+		ROS_DEBUG("Setting the beep command");
+		cmdSend[CTL_BYTE]	= BEEP_CTL_BIT;
+		beepcmd--;
 	}else{
 		cmdSend[CTL_BYTE] = 0;
 	}
 }
 
+void UKART::releaseMotor(int& rlsmotorcmd){
+	if(rlsmotorcmd > 0 && cmdSend[CTL_BYTE] == 0){
+		ROS_DEBUG("Release the motor");
+		cmdSend[CTL_BYTE]	= MOTOR_RELEASE_BIT;
+		rlsmotorcmd--;
+	}
+}
+
 void UKART::calibrateIMU(int& imuCalibcmd){
 	if(imuCalibcmd > 0){
+		ROS_INFO("Calibrate IMU");
 		ser.write(&cmdCalib[0],13);
 		imuCalibcmd--;
 	}
@@ -151,24 +163,27 @@ void UKART::calibrateIMU(int& imuCalibcmd){
 
 void UKART::clearError(int& clrErrorcmd){
 	if(clrErrorcmd > 0){
+		ROS_DEBUG("Clear the errors");
 		ser.write(&cmdErClr[0],13);
 		clrErrorcmd--;
 	}
 }
 
-void UKART::releaseMotor(int& rlsmotorcmd){
-	if(rlsmotorcmd > 0){
-		cmdSend[CTL_BYTE]	= MOTOR_RELEASE_BIT;
-		rlsmotorcmd--;
+void UKART::changeControlMode(int& cntlrModecmd){
+	if(cntlrModecmd != 0){
+		if(!(cntlrModecmd > 0)){
+			ROS_INFO("Enter wire control mode");
+			ser.write(&cmdSetup[0],13);
+		}else{
+			ROS_INFO("Exit wire control mode");
+			ser.write(&cmdExCtrl[0],13);
+		}
+		cntlrModecmd = 0;
 	}
 }
 
-void UKART::isConnected(int& serCondition){
-	if(ser.isOpen()){
-		serCondition = 1;
-	}else{
-		serCondition = 0;
-	}
+int UKART::isConnected(){
+	return ser.isOpen();
 }
 
 void UKART::send(){
