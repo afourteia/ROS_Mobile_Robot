@@ -42,13 +42,11 @@ int UKART::checkReceivedData(){
 	switch (cmdrecieve[CMD]) {
 		case WCEMA:
 			ROS_DEBUG("Enter wire ctl mode");
-			ROS_INFO("reporting error ");
 			ctlmodeACK = 1;
 			return WCEMA;
 			break;
 		case WCExMA:
 			ROS_DEBUG("Exit wire ctl mode");
-			ROS_INFO("Exit wire ctl mode ");
 			ctlmodeACK = -1;
 			return WCExMA;
 			break;
@@ -89,7 +87,7 @@ int UKART::checkReceivedData(){
 			return YawVoltInfo;
 			break;
 		case PwOFF:
-			ROS_INFO("reporting power off");
+			ROS_DEBUG("reporting power off");
 			return PwOFF;
 			break;
 		case ODOInfo:
@@ -117,7 +115,7 @@ int UKART::checkReceivedData(){
 			return ErrorInfo;
 			break;
 		case GACA:
-			ROS_INFO("reporting gyro calibration ack");
+			ROS_DEBUG("reporting gyro calibration ack");
 			return GACA;
 			break;
 		default:
@@ -155,7 +153,7 @@ void UKART::releaseMotor(int& rlsmotorcmd){
 
 void UKART::calibrateIMU(int& imuCalibcmd){
 	if(imuCalibcmd > 0){
-		ROS_INFO("Calibrate IMU");
+		ROS_DEBUG("Calibrate IMU");
 		ser.write(&cmdCalib[0],13);
 		imuCalibcmd--;
 	}
@@ -172,10 +170,10 @@ void UKART::clearError(int& clrErrorcmd){
 void UKART::changeControlMode(int& cntlrModecmd){
 	if(cntlrModecmd != 0){
 		if(!(cntlrModecmd > 0)){
-			ROS_INFO("Enter wire control mode");
+			ROS_DEBUG("Enter wire control mode");
 			ser.write(&cmdSetup[0],13);
 		}else{
-			ROS_INFO("Exit wire control mode");
+			ROS_DEBUG("Exit wire control mode");
 			ser.write(&cmdExCtrl[0],13);
 		}
 		cntlrModecmd = 0;
