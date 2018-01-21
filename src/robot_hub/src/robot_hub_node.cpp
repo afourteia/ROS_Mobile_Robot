@@ -3,8 +3,9 @@
 #include <ros/console.h>
 #include <ros/console.h>
 #include <std_msgs/Int8.h>
-#include "kart_serial.h"
-#include "controller_box/UKARTparams.h"
+#include <std_msgs/Int32.h>
+#include <std_msgs/Int16.h>
+#include <controller_box/UKARTparams.h>
 
 
 //global variables
@@ -18,8 +19,7 @@ int cntlrModecmd = 0;
 int sensorcalib = 0;
 uint8_t publishFlag = 0;
 
-//global kart object
-UKART kart;
+
 
 // Velocity commands callback function
 void callbackmotorCommands(const geometry_msgs::Twist& vel){
