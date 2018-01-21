@@ -34,8 +34,8 @@ class UKART{
     int16_t  roll = 0;
     int16_t  tempL = 0;
     int16_t  tempR = 0;
-    int16_t  speedlinGoal = 0;
-    int16_t  speedAngGoal = 0;
+    int16_t  mtrRPMgoalL = 0;
+    int16_t  mtrRPMgoalR = 0;
     int16_t  yaw = 0;
     int16_t  voltage = 0;
     uint8_t   powerOFF = 0;

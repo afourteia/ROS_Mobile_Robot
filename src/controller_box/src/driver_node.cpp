@@ -71,8 +71,8 @@ void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo){
 	ukartinfo.temp.L = kart.tempL;
 	ukartinfo.temp.R = kart.tempR;
 
-	ukartinfo.speedlinGoal = kart.speedlinGoal;
-	ukartinfo.speedAngGoal = kart.speedAngGoal;
+	ukartinfo.mtrRPMgoal.L = kart.mtrRPMgoalL;
+	ukartinfo.mtrRPMgoal.R = kart.mtrRPMgoalR;
 
 	ukartinfo.yaw = kart.yaw;
 	ukartinfo.voltage = kart.voltage;

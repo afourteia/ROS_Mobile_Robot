@@ -76,8 +76,8 @@ int UKART::checkReceivedData(){
 			break;
 		case SSpInfo:
 			ROS_DEBUG("reporting speed setting");
-			speedlinGoal = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
-			speedAngGoal = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
+			mtrRPMgoalL = (cmdrecieve[info_4]<<8) + cmdrecieve[info_3];
+			mtrRPMgoalR = (cmdrecieve[info_2]<<8) + cmdrecieve[info_1];
 			return SSpInfo;
 			break;
 		case YawVoltInfo:

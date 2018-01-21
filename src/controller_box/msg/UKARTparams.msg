@@ -6,10 +6,11 @@ int8   ctlMode
 LeftnRight mtrRPM
 LeftnRight current
 LeftnRight temp
+LeftnRight mtrRPMgoal
+
 uint16 voltage
 int16 yaw
-int16 speedlinGoal
-int16 speedAngGoal
+
 int16 pitch
 int16 roll
 int32 odom
