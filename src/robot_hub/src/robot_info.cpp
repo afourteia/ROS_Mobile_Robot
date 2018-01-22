@@ -1,6 +1,7 @@
 #include "robot_info.h"
-#include <geometry_msgs/Twist.h>
-#include <std_msgs.h>
+#include <controller_box/velocity.h>
+#include <std_msgs/Int8.h>
+#include <std_msgs/Float32MultiArray.h>
 
 
 
@@ -14,31 +15,46 @@ MICA::MICA(){
   iphoneSub = nh.subscribe("iphone_control",1,&MICA::cbiphonecmd, this);
 
   //guiPub = nh.advertise<controller_box::UKARTparams>("robot_info",1);
-  velocityPub = nh.advertise<geometry_msgs::Twis>("kart_velocity",1);
+  velocityPub = nh.advertise<controller_box::velocity>("kart_velocity",1);
   beepPub = nh.advertise<std_msgs::Int8>("beep_command",1);
   calibratePub = nh.advertise<std_msgs::Int8>("IMU_calibrate_command",1);
   releaseMotorPub = nh.advertise<std_msgs::Int8>("motor_rls_command",1);
   clearErrorPub = nh.advertise<std_msgs::Int8>("clear_error_command",1);
-  changeControlModePub; = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
+  changeControlModePub = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
   //mcuPub = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
 }
 
-void MICA::cbUkartInfo(const controller_box::UKARTparams::ConstPtr& ukartInfoIncoming){
+void MICA::cbUkartInfo(const controller_box::UKARTparams& ukartInfoIncoming){
   ukartinfo = ukartInfoIncoming;
 }
 
-void MICA::cbGuiInfo(const std_msgs::FLoat32MultiArray& mcuIncoming){
-  mcuinfo = ukartIncoming;
+void MICA::cbGuiInfo(const std_msgs::Float32MultiArray& mcuIncoming){
+
 }
 
-void MICA::cbXboxController(const sensor_msgs::Joy:ConstPtr& xboxControllerIncoming){
-  
-  velocityPub.publish();
-  beepPub.publish();
-  calibratePub.publish();
-  releaseMotorPub.publish();
-  clearErrorPub.publish();
-  changeControlModePub.publish();
+void MICA::cbXboxController(const sensor_msgs::Joy::ConstPtr& joy){
+
+  controller_box::velocity vel;
+  std_msgs::Int8 msg;
+  vel.linear = static_cast<int>(velScale * joy->axes[1]); // Up/Down Axis stick left
+  vel.angular = static_cast<int>(velScale * joy->axes[3]); // Left/right Axis stick right
+  velocityPub.publish(vel);
+
+
+  msg.data = joy->buttons[9] + joy->buttons[10]; // left & right button stick
+  beepPub.publish(msg);
+
+  msg.data = joy->buttons[4] + joy->buttons[5]; // LB & RB buttons
+  releaseMotorPub.publish(msg);
+
+  msg.data = joy->buttons[7]; // start button
+  calibratePub.publish(msg);
+
+  msg.data = joy->buttons[6]; // back button
+  clearErrorPub.publish(msg);
+
+  msg.data = static_cast<int>(joy->axes[7]); // cross key up/down
+  changeControlModePub.publish(msg);
 }
 
 void MICA::cbMcuInfo(const std_msgs::Int8& mcuInfoIncoming){
@@ -49,8 +65,6 @@ void MICA::cbiphonecmd(const std_msgs::Int8& iphoneIncoming){
 
 }
 
-void processNode(){
-
-
+void MICA::processNode(){
 
 }

@@ -6,7 +6,6 @@
 #include "controller_box/UKARTparams.h"
 #include "controller_box/velocity.h"
 
-
 //global variables
 int linVelcmd = 0;
 int angVelcmd = 0;
@@ -25,6 +24,7 @@ UKART kart;
 void cbmotorCommands(const controller_box::velocity& vel){
 	linVelcmd = vel.linear;
 	angVelcmd = vel.angular;
+	ROS_INFO_STREAM("I See Linear " << linVelcmd << "& Angular " <<  angVelcmd);
 }
 
 // Beep commands callback function

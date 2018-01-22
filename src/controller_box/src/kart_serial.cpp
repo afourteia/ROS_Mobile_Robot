@@ -127,6 +127,7 @@ int UKART::checkReceivedData(){
 
 void UKART::setVelocity(int linVelcmd, int angVelcmd){
 	ROS_DEBUG("Setting the speed values");
+	ROS_DEBUG("Setting the speed values");
 	cmdSend[LINVELL] = 0xff & linVelcmd;
 	cmdSend[LINVELH] = 0xff & (linVelcmd >> 8);
 	cmdSend[ANGVELL] = 0xff & angVelcmd;
@@ -137,7 +138,7 @@ void UKART::beep(int& beepcmd){
 	if(beepcmd > 0){
 		ROS_DEBUG("Setting the beep command");
 		cmdSend[CTL_BYTE]	= BEEP_CTL_BIT;
-		beepcmd--;
+		//beepcmd--;
 	}else{
 		cmdSend[CTL_BYTE] = 0;
 	}
@@ -147,7 +148,7 @@ void UKART::releaseMotor(int& rlsmotorcmd){
 	if(rlsmotorcmd > 0 && cmdSend[CTL_BYTE] == 0){
 		ROS_DEBUG("Release the motor");
 		cmdSend[CTL_BYTE]	= MOTOR_RELEASE_BIT;
-		rlsmotorcmd--;
+		//rlsmotorcmd--;
 	}
 }
 
@@ -155,7 +156,7 @@ void UKART::calibrateIMU(int& imuCalibcmd){
 	if(imuCalibcmd > 0){
 		ROS_DEBUG("Calibrate IMU");
 		ser.write(&cmdCalib[0],13);
-		imuCalibcmd--;
+		//imuCalibcmd--;
 	}
 }
 
@@ -169,7 +170,7 @@ void UKART::clearError(int& clrErrorcmd){
 
 void UKART::changeControlMode(int& cntlrModecmd){
 	if(cntlrModecmd != 0){
-		if(!(cntlrModecmd > 0)){
+		if(cntlrModecmd > 0){
 			ROS_DEBUG("Enter wire control mode");
 			ser.write(&cmdSetup[0],13);
 		}else{

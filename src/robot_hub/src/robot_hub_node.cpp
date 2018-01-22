@@ -4,7 +4,9 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int16.h>
-#include <controller_box/UKARTparams.h>
+#include "controller_box/UKARTparams.h"
+#include "controller_box/velocity.h"
+#include "robot_info.h"
 
 
 int main(int argc, char **argv){
@@ -17,7 +19,7 @@ int main(int argc, char **argv){
 
 	while(ros::ok()){
 
-    processNode();
+    mica.processNode();
 
 		ros::spinOnce();
 		rate.sleep();
