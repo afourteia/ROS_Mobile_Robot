@@ -1,6 +1,7 @@
 # Paramters provided by the Ukart controller box
 # uses the leftnRight.msg message data type
 
+#Header header
 int8   ctlMode
 
 LeftnRight mtrRPM

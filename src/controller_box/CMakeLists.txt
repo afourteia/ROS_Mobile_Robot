@@ -53,6 +53,7 @@ add_message_files(
    UKARTparams.msg
    UKARTdiag.msg
    LeftnRight.msg
+   velocity.msg
 )
 
 ## Generate services in the 'srv' folder

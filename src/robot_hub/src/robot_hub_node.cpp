@@ -1,143 +1,23 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <ros/console.h>
-#include <ros/console.h>
 #include <std_msgs/Int8.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int16.h>
 #include <controller_box/UKARTparams.h>
 
 
-//global variables
-int linVelcmd = 0;
-int angVelcmd = 0;
-int beepcmd = 0;
-int imuCalibcmd = 0;
-int clrErrorcmd = 0;
-int rlsmotorcmd = 0;
-int cntlrModecmd = 0;
-int sensorcalib = 0;
-uint8_t publishFlag = 0;
-
-
-
-// Velocity commands callback function
-void callbackmotorCommands(const geometry_msgs::Twist& vel){
-	linVelcmd = (int)(vel.linear.x);
-	angVelcmd = (int)(vel.angular.z * kart.CartRadius);
-}
-
-// Beep commands callback function
-void callbackbeepCommands(const std_msgs::Int8& msg){
-	beepcmd = msg.data;
-}
-
-// IMU calibration callback function
-void callbackcalibrateCommands(const std_msgs::Int8& msg){
-	imuCalibcmd = msg.data;
-}
-
-// Clear error callback function
-void callbackclearerrorCommands(const std_msgs::Int8& msg){
-	clrErrorcmd = msg.data;
-}
-
-// release motor callback function
-void callbackmotorreleaseCommands(const std_msgs::Int8& msg){
-	rlsmotorcmd = msg.data;
-}
-
-void callbackWireControlModeCommands(const std_msgs::Int8& msg){
-	cntlrModecmd = msg.data;
-}
-void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo){
-
-	ukartinfo.ctlMode = kart.ctlmodeACK;
-
-	ukartinfo.mtrRPM.L =  kart.mtrRPML;
-	ukartinfo.mtrRPM.R =  kart.mtrRPMR;
-
-	ukartinfo.current.L = kart.currentL;
-	ukartinfo.current.R = kart.currentR;
-
-	ukartinfo.pitch = kart.pitch;
-	ukartinfo.roll = kart.roll;
-
-	ukartinfo.temp.L = kart.tempL;
-	ukartinfo.temp.R = kart.tempR;
-
-	ukartinfo.mtrRPMgoal.L = kart.mtrRPMgoalL;
-	ukartinfo.mtrRPMgoal.R = kart.mtrRPMgoalR;
-
-	ukartinfo.yaw = kart.yaw;
-	ukartinfo.voltage = kart.voltage;
-
-	ukartinfo.powerOFF = kart.powerOFF;
-
-	ukartinfo.odom = kart.odom;
-
-	ukartinfo.version = kart.version;
-
-	ukartinfo.chipID = kart.chipID;
-
-	ukartinfo.error = kart.error;
-
-	ukartinfo.imuCalibAck = kart.imuCalibAck;
-
-	ukartinfo.serCondition = kart.isConnected();
-
-}
-
 int main(int argc, char **argv){
 
 	//Initialize ROS node
-	ros::init(argc,argv,"driver_node");		// Node name
-	ros::NodeHandle nh;
-	ros::Subscriber velSub = nh.subscribe("kart_velocity",1,callbackmotorCommands);		// Subscribe to "kart_velocity" topic
-	ros::Subscriber beepSub = nh.subscribe("beep_command",1,callbackbeepCommands);		// Subscribe to "beep_command"
-	ros::Subscriber calibrateSub = nh.subscribe("IMU_calibrate_command",1,callbackcalibrateCommands); 	// Subscribe to "IMU_calibrate_command"
-	ros::Subscriber releaseMotorSub = nh.subscribe("motor_rls_command",1,callbackmotorreleaseCommands); 	// Subscribe to "motor_rls_command"
-	ros::Subscriber clearErrorSub = nh.subscribe("clear_error_command",1,callbackclearerrorCommands); 	// Subscribe to "clear_error_command"
+	ros::init(argc,argv,"robot_hub_node");		// Node name
+	MICA mica;
 
-	ros::Subscriber changeControlModeSub = nh.subscribe("Wire_control_mode",1,callbackWireControlModeCommands); 	// Subscribe to "clear_error_command"
-
-	ros::Publisher UKARTpub = nh.advertise<controller_box::UKARTparams>("Ukart_parameters",1);	// Publish to "Ukart_parameters"
-	//ros::Publisher UKARTdiagPub = nh.advertise<controller_box::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
-
-
-	ros::Rate rate(50); // Contoller box sends at 40hz
-
-
-	controller_box::UKARTparams ukartinfo;
-	//controller_box::UKARTdiag ukartInfo;
+	ros::Rate rate(10);
 
 	while(ros::ok()){
 
-		//Set the velocity commands
-		kart.setVelocity(linVelcmd,angVelcmd);
-		// Check for other commands
-		kart.beep(beepcmd);
-		kart.releaseMotor(rlsmotorcmd); //this should be called after kart.beep()
-
-		kart.calibrateIMU(imuCalibcmd);
-		kart.clearError(clrErrorcmd);
-
-		kart.changeControlMode(cntlrModecmd);
-
-
-
-		//Set the parity bit
-		kart.send();
-
-		publishFlag = kart.checkReceivedData();
-
-		if(!(publishFlag == 0xFF)){
-			loadROSKARTmessage(ukartinfo);
-			UKARTpub.publish(ukartinfo);
-		}
-
-
-		//voltPub.publish(voltagePubValue);
+    processNode();
 
 		ros::spinOnce();
 		rate.sleep();
