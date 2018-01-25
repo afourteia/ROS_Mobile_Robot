@@ -2,7 +2,8 @@
 #include <serial/serial.h>
 
 //Setup serial communication
-UKART::UKART(){
+UKART::UKART()
+{
 
 	try{
 		ser.setPort("/dev/ttyUSB0");
@@ -25,7 +26,8 @@ UKART::UKART(){
 }
 
 //Set the parity bit
-int UKART::parityBit(volatile uint8_t *data, int length){
+int UKART::parityBit(volatile uint8_t *data, int length)
+{
 	ROS_DEBUG("Setting Parity Bit");
 	char XorVal = 0;
 	for (int i = 0; i < length; i++){
@@ -36,7 +38,8 @@ int UKART::parityBit(volatile uint8_t *data, int length){
 
 // Read the serial comm and assign the data to the public variables
 // It sets a publish flag as well
-int UKART::checkReceivedData(){
+int UKART::checkReceivedData()
+{
 	ROS_DEBUG("Checking Receieved data");
 	ser.read(&cmdrecieve[0],8);
 	switch (cmdrecieve[CMD]) {

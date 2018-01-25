@@ -105,7 +105,7 @@ int main(int argc, char **argv){
 	//ros::Publisher UKARTdiagPub = nh.advertise<controller_box::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
 
 
-	//ros::Rate rate(50); // Contoller box sends at 40hz
+	ros::Rate rate(50); // Contoller box sends at 40hz
 
 
 	controller_box::UKARTparams ukartinfo;

@@ -6,7 +6,8 @@
 #include <ros/console.h>
 #include <stdexcept>
 
-class UKART{
+class UKART
+{
   public:
     UKART();
     int parityBit(volatile unsigned char *data, int length);

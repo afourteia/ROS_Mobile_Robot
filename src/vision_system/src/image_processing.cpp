@@ -1,20 +1,48 @@
 #include "image_processing.h"
 
 
-ImageConverter::ImageConverter() : it_(nh_){
+ImageConverter::ImageConverter()
+ : it_(nh_)
+{
   // Subscribe to input video feed and publish output video feed
-  image_sub_ = it_.subscribe("/camera/image_raw", 1,
-    &ImageConverter::imageCb, this);
+  rbg_sub_ = it_.subscribe("/camera/rgb/image_rect_color", 1,
+    &ImageConverter::rbgCb, this);
+  depth_sub_ = it_.subscribe("/camera/depth_registered/image_raw", 1,
+    &ImageConverter::depthCb, this);
   image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
   cv::namedWindow(OPENCV_WINDOW);
 }
 
-ImageConverter::~ImageConverter(){
+ImageConverter::~ImageConverter()
+{
   cv::destroyWindow(OPENCV_WINDOW);
 }
 
-void ImageConverter::imageCb(const sensor_msgs::ImageConstPtr& msg){
+void ImageConverter::rbgCb(const sensor_msgs::ImageConstPtr& img)
+{
+  rbgIn_ = img;
+}
+
+void ImageConverter::rbgCb(const sensor_msgs::ImageConstPtr& img)
+{
+  depthIn_ = img;
+}
+
+void ImageConverter::spin()
+{
+  ros::Rate rate(30);
+  while(ros::ok())
+  {
+    process();
+    spinOnce();
+    rate.sleep();
+  }
+}
+
+
+void ImageConverter::process()
+{
   cv_bridge::CvImagePtr cv_ptr;
 
   try{
@@ -25,7 +53,8 @@ void ImageConverter::imageCb(const sensor_msgs::ImageConstPtr& msg){
   }
 
   // Draw an example circle on the video stream
-  if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60){
+  if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
+  {
     cv::circle(cv_ptr->image, cv::Point(50, 50), 10, CV_RGB(255,0,0));
   }
 
