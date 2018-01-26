@@ -33,7 +33,7 @@ void ImageConverter::rbgCb(const sensor_msgs::ImageConstPtr& img)
 
 void ImageConverter::spin()
 {
-  ros::Rate rate(30);
+  ros::Rate rate(30); //
   while(ros::ok())
   {
     process();
