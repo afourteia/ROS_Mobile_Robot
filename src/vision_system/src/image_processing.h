@@ -31,7 +31,7 @@ class ImageConverter
     image_transport::ImageTransport it_;
     image_transport::Subscriber rbg_sub_;
     image_transport::Subscriber depth_sub_;
-    image_transport::Publisher image_pub_;
+    image_transport::Publisher rbg_pub_;
 
 
     ros::NodeHandle nh_;
@@ -39,9 +39,14 @@ class ImageConverter
 
     sensor_msgs::ImageConstPtr rbgIn_;
     sensor_msgs::ImageConstPtr depthIn_;
-    cv_bridge::CvImage imageOut_;
+    sensor_msgs::ImageConstPtr rbgIn;
+    sensor_msgs::ImageConstPtr depthIn;
 
-    static const std::string OPENCV_WINDOW = "Image window";
+    cv_bridge::CvImagePtr rbgOut_;
+    cv_bridge::CvImagePtr depthOut_;
+
+    static const std::string RGB_WINDOW = "rgb window";
+    static const std::string DEPTH_WINDOW = "depth window";
 };
 
 #endif
