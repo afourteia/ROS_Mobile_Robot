@@ -5,13 +5,10 @@
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "image_converter");
-  ros::NodeHandle nh;
-  ros:NodeHandle nhPrivate ("~");
+  //ros::NodeHandle nh;
+  //ros::NodeHandle nhPrivate ("~");
+  ImageConverter ic;
 
-  ImageConverter* ic = 0;
-
-  ic = new ImageConverter (nh, nhPrivate);
-
-  ic->spin();
+  ic.spin();
   return 0;
 }

@@ -13,6 +13,7 @@ ImageConverter::ImageConverter()
 
   static const std::string RGB_WINDOW = "rgb window";
   static const std::string DEPTH_WINDOW = "depth window";
+  static const std::string window_name = "Threshold Demo";
   cv::namedWindow(RGB_WINDOW);
   cv::namedWindow(DEPTH_WINDOW);
   cv::namedWindow( window_name, CV_WINDOW_AUTOSIZE );

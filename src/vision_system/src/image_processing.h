@@ -5,6 +5,7 @@
 #include <ros/console.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
+#include <cv.h>
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -56,7 +57,6 @@ class ImageConverter
     int const max_BINARY_value = 255;
 
     cv::Mat src, src_gray, dst;
-    char* window_name = "Threshold Demo";
 
     char* trackbar_type = "Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
     char* trackbar_value = "Value";
