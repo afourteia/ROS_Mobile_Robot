@@ -5,13 +5,15 @@
 #include <ros/console.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
-#include <sensor_msgs/image_encodinngs.h>
+#include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "opencv2/objdetect/objdetect.hpp"
 #include <geometry_msgs/Vector3Stamped.h>
 #include <math.h>
 #include <std_msgs/UInt8.h>
-
+#include <stdlib.h>
+#include <stdio.h>
 
 class ImageConverter
 {
@@ -24,10 +26,10 @@ class ImageConverter
     void depthCb(const sensor_msgs::ImageConstPtr& img);
     void spin();
     void process();
+    void Threshold_Demo( int, void* );
 
 
   private:
-    ros::NodeHandle nh_;
     image_transport::ImageTransport it_;
     image_transport::Subscriber rbg_sub_;
     image_transport::Subscriber depth_sub_;
@@ -45,8 +47,20 @@ class ImageConverter
     cv_bridge::CvImagePtr rbgOut_;
     cv_bridge::CvImagePtr depthOut_;
 
-    static const std::string RGB_WINDOW = "rgb window";
-    static const std::string DEPTH_WINDOW = "depth window";
+
+
+    int threshold_value = 0;
+    int threshold_type = 3;;
+    int const max_value = 255;
+    int const max_type = 4;
+    int const max_BINARY_value = 255;
+
+    cv::Mat src, src_gray, dst;
+    char* window_name = "Threshold Demo";
+
+    char* trackbar_type = "Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
+    char* trackbar_value = "Value";
+
 };
 
 #endif

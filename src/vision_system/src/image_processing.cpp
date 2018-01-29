@@ -11,8 +11,19 @@ ImageConverter::ImageConverter()
     &ImageConverter::depthCb, this);
   image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
+  static const std::string RGB_WINDOW = "rgb window";
+  static const std::string DEPTH_WINDOW = "depth window";
   cv::namedWindow(RGB_WINDOW);
   cv::namedWindow(DEPTH_WINDOW);
+  cv::namedWindow( window_name, CV_WINDOW_AUTOSIZE );
+
+  cv::createTrackbar( trackbar_type, window_name, &threshold_type,
+    max_type, Threshold_Demo );
+
+  cv::createTrackbar( trackbar_value,
+    window_name, &threshold_value, max_value, Threshold_Demo );
+
+  Threshold_Demo( 0, 0 );
 }
 
 ImageConverter::~ImageConverter()
@@ -68,9 +79,27 @@ void ImageConverter::process()
   // Draw an example circle on the video stream
   if (rbgOut_->image.rows > 60 && rbgOut_->image.cols > 60)
   {
-    cv::circle(rbgIn->image, cv::Point(50, 50), 10, CV_RGB(255,0,0));
+    cv::Mat gray_image, hsv_image, mask;
+    cv::cvtColor( rbgOut_->image, gray_image, CV_BGR2GRAY );
+    cv::cvtColor( rbgOut_->image, hsv_image, CV_BGR2HSV);
+    v::inRange(hsv_image, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask);
   }
 
   // Output modified video stream
   rbg_pub_.publish(rbgOut_->toImageMsg());
+}
+
+
+void ImageConverter::Threshold_Demo( int, void* )
+{
+  /* 0: Binary
+     1: Binary Inverted
+     2: Threshold Truncated
+     3: Threshold to Zero
+     4: Threshold to Zero Inverted
+   */
+
+  threshold( src_gray, dst, threshold_value, max_BINARY_value,threshold_type );
+
+  imshow( window_name, dst );
 }
