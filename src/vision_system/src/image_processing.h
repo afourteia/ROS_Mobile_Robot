@@ -30,11 +30,11 @@ class ImageConverter
     void Threshold_Demo( int, void* );
 
 
-  private:
+  protected:
     image_transport::ImageTransport it_;
     image_transport::Subscriber rbg_sub_;
     image_transport::Subscriber depth_sub_;
-    image_transport::Publisher rbg_pub_;
+    image_transport::Publisher image_pub_;
 
 
     ros::NodeHandle nh_;
@@ -48,7 +48,9 @@ class ImageConverter
     cv_bridge::CvImagePtr rbgOut_;
     cv_bridge::CvImagePtr depthOut_;
 
-
+    const std::string RGB_WINDOW = "rgb window";
+    const std::string DEPTH_WINDOW = "depth window";
+    const std::string window_name = "Threshold Demo";
 
     int threshold_value = 0;
     int threshold_type = 3;;
@@ -58,8 +60,8 @@ class ImageConverter
 
     cv::Mat src, src_gray, dst;
 
-    char* trackbar_type = "Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
-    char* trackbar_value = "Value";
+    const char* trackbar_type = "Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
+    const char* trackbar_value = "Value";
 
 };
 

@@ -11,20 +11,12 @@ ImageConverter::ImageConverter()
     &ImageConverter::depthCb, this);
   image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
-  static const std::string RGB_WINDOW = "rgb window";
-  static const std::string DEPTH_WINDOW = "depth window";
-  static const std::string window_name = "Threshold Demo";
+
   cv::namedWindow(RGB_WINDOW);
   cv::namedWindow(DEPTH_WINDOW);
   cv::namedWindow( window_name, CV_WINDOW_AUTOSIZE );
 
-  cv::createTrackbar( trackbar_type, window_name, &threshold_type,
-    max_type, Threshold_Demo );
 
-  cv::createTrackbar( trackbar_value,
-    window_name, &threshold_value, max_value, Threshold_Demo );
-
-  Threshold_Demo( 0, 0 );
 }
 
 ImageConverter::~ImageConverter()
@@ -38,7 +30,7 @@ void ImageConverter::rbgCb(const sensor_msgs::ImageConstPtr& img)
   rbgIn_ = img;
 }
 
-void ImageConverter::rbgCb(const sensor_msgs::ImageConstPtr& img)
+void ImageConverter::depthCb(const sensor_msgs::ImageConstPtr& img)
 {
   depthIn_ = img;
 }
@@ -46,10 +38,17 @@ void ImageConverter::rbgCb(const sensor_msgs::ImageConstPtr& img)
 void ImageConverter::spin()
 {
   ros::Rate rate(30); //
+  // cv::createTrackbar( trackbar_type, window_name, &threshold_type,
+  //   max_type, Threshold_Demo );
+  //
+  // cv::createTrackbar( trackbar_value,
+  //   window_name, &threshold_value, max_value, Threshold_Demo );
+
+  Threshold_Demo( 0, 0 );
   while(ros::ok())
   {
     process();
-    spinOnce();
+    ros::spinOnce();
     // Update GUI Window
     cv::imshow(RGB_WINDOW, rbgOut_->image);
     cv::imshow(DEPTH_WINDOW, depthOut_->image);
@@ -65,13 +64,13 @@ void ImageConverter::process()
   depthIn = depthIn_;
 
   // Check if image if rbg image has been processed before
-  if(rbgOut_.header.seq == rbgIn.header.seq)
+  if(rbgOut_->header.seq == rbgIn->header.seq)
     return;
 
 
   try{
-    rbgOut_ = cv_bridge::toCvCopy(rbgIn, sensor_msgs::image_encodinngs::BGR8);
-    depthOut_ = cv_bridge::toCvCopy(depthIn, sensor_msgs::image_encodinngs::MONO8);
+    rbgOut_ = cv_bridge::toCvCopy(rbgIn, sensor_msgs::image_encodings::BGR8);
+    depthOut_ = cv_bridge::toCvCopy(depthIn, sensor_msgs::image_encodings::MONO8);
   }catch(cv_bridge::Exception& e){
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
@@ -83,11 +82,11 @@ void ImageConverter::process()
     cv::Mat gray_image, hsv_image, mask;
     cv::cvtColor( rbgOut_->image, gray_image, CV_BGR2GRAY );
     cv::cvtColor( rbgOut_->image, hsv_image, CV_BGR2HSV);
-    v::inRange(hsv_image, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask);
+    cv::inRange(hsv_image, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), mask);
   }
 
   // Output modified video stream
-  rbg_pub_.publish(rbgOut_->toImageMsg());
+  image_pub_.publish(rbgOut_->toImageMsg());
 }
 
 
