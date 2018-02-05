@@ -21,7 +21,7 @@ class ImageConverter
 
   public:
 
-    ImageConverter();
+    ImageConverter(ros::NodeHandle& nh, ros::NodeHandle& nhPrivate);
     ~ImageConverter();
     void rbgCb(const sensor_msgs::ImageConstPtr& img);
     void depthCb(const sensor_msgs::ImageConstPtr& img);
@@ -49,19 +49,6 @@ class ImageConverter
     cv_bridge::CvImagePtr depthOut_;
 
     const std::string RGB_WINDOW = "rgb window";
-    const std::string DEPTH_WINDOW = "depth window";
-    const std::string window_name = "Threshold Demo";
-
-    int threshold_value = 0;
-    int threshold_type = 3;;
-    int const max_value = 255;
-    int const max_type = 4;
-    int const max_BINARY_value = 255;
-
-    cv::Mat src, src_gray, dst;
-
-    const char* trackbar_type = "Type: \n 0: Binary \n 1: Binary Inverted \n 2: Truncate \n 3: To Zero \n 4: To Zero Inverted";
-    const char* trackbar_value = "Value";
 
 };
 
