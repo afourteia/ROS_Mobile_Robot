@@ -21,14 +21,12 @@ class ImageConverter
 
   public:
 
-    ImageConverter(ros::NodeHandle& nh, ros::NodeHandle& nhPrivate);
+    ImageConverter();
     ~ImageConverter();
     void rbgCb(const sensor_msgs::ImageConstPtr& img);
     void depthCb(const sensor_msgs::ImageConstPtr& img);
     void spin();
     void process();
-    void Threshold_Demo( int, void* );
-
 
   protected:
     image_transport::ImageTransport it_;
@@ -38,7 +36,6 @@ class ImageConverter
 
 
     ros::NodeHandle nh_;
-    ros::NodeHandle nhPrivate_;
 
     sensor_msgs::ImageConstPtr rbgIn_;
     sensor_msgs::ImageConstPtr depthIn_;

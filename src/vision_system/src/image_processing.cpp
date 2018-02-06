@@ -1,7 +1,7 @@
 #include "image_processing.h"
 
 
-ImageConverter::ImageConverter(ros::NodeHandle& nh, ros::NodeHandle& nhPrivate)
+ImageConverter::ImageConverter()
  : it_(nh_)
 {
   // Subscribe to input video feed and publish output video feed
@@ -10,6 +10,7 @@ ImageConverter::ImageConverter(ros::NodeHandle& nh, ros::NodeHandle& nhPrivate)
   depth_sub_ = it_.subscribe("/camera/depth_registered/image_raw", 1,
     &ImageConverter::depthCb, this);
   image_pub_ = it_.advertise("/image_converter/output_video", 1);
+
 
   cv::namedWindow(RGB_WINDOW);
 
@@ -40,6 +41,8 @@ void ImageConverter::spin()
     // Update GUI Window
     //cv::imshow(RGB_WINDOW, rbgOut_->image);
     //cv::imshow(DEPTH_WINDOW, depthOut_->image);
+    cv::imshow(RGB_WINDOW, rbgOut_->image);
+    cv::waitKey(3);
     rate.sleep();
   }
 }

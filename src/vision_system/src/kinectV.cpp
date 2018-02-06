@@ -5,11 +5,8 @@
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "kinectV");
-  ros::NodeHandle nh;
-  ros::NodeHandle nhPrivate ("~");
-  ImageConverter* ic = 0;
-  ic = new ImageConverter (nh, nhPrivate);
+  ImageConverter ic;
 
-  ic->spin();
+  ic.spin();
   return 0;
 }
