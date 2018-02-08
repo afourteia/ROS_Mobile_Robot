@@ -4,6 +4,7 @@
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <ros/console.h>
 
 
 static const std::string RGB_WINDOW = "rgb window";
@@ -33,11 +34,14 @@ public:
     : it_(nh_)
   {
     // Subscrive to input video feed and publish output video feed
-    rbg_sub_ = it_.subscribe("/camera/rgb/image_raw", 1,
+
+    ROS_INFO_STREAM("Creating an IC object");
+    rbg_sub_ = it_.subscribe("/camera/rgb/image_color", 1,
       &ImageConverter::rbgCb, this);
 
-    depth_sub_ = it_.subscribe("/camera/depth_registered/image_raw", 1,
+    depth_sub_ = it_.subscribe("/camera/depth/image_raw", 1,
       &ImageConverter::depthCb, this);
+
 
     image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
@@ -53,12 +57,16 @@ public:
 
   void rbgCb(const sensor_msgs::ImageConstPtr& img)
   {
+    ROS_INFO_STREAM("receiving an rgb image");
+    if(img == NULL) ROS_INFO_STREAM("cb rbg is NULL");
     rbgIn_ = img;
   }
 
 
   void depthCb(const sensor_msgs::ImageConstPtr& img)
   {
+    ROS_INFO_STREAM("receiving a depth image");
+    if(img == NULL) ROS_INFO_STREAM("cb depth is NULL");
     depthIn_ = img;
   }
 
@@ -66,22 +74,46 @@ public:
   void process()
   {
     // Atonomicly copy the image pointer so it doesn't change during process();
+    ROS_INFO_STREAM("processing");
     sensor_msgs::ImageConstPtr rbgIn = rbgIn_;
     sensor_msgs::ImageConstPtr depthIn = depthIn_;
 
+    ROS_INFO_STREAM("Checking for Null image");
     // Check if image if rbg image has been processed before
-    if(rbgOut_->header.seq == rbgIn->header.seq)
+    if(rbgIn == NULL)// || depthIn == NULL)
+    {
+      ROS_INFO_STREAM("rbgIn is null");
       return;
+    }
+
+    if(depthIn == NULL)
+    {
+      ROS_INFO_STREAM("depthIn is null");
+      return;
+    }
 
 
+    // ROS_INFO_STREAM("checking image sequence");
+    // // Check if image if rbg image has been processed before
+    // if(rbgOut_->header.seq == rbgIn->header.seq)
+    //   return;
+
+    ROS_INFO_STREAM("converting ros image to opencv image");
     try{
       rbgOut_ = cv_bridge::toCvCopy(rbgIn, sensor_msgs::image_encodings::BGR8);
-      depthOut_ = cv_bridge::toCvCopy(depthIn, sensor_msgs::image_encodings::MONO8);
     }catch(cv_bridge::Exception& e){
       ROS_ERROR("cv_bridge exception: %s", e.what());
       return;
     }
 
+    try{
+      depthOut_ = cv_bridge::toCvCopy(depthIn, sensor_msgs::image_encodings::TYPE_8UC1);
+    }catch(cv_bridge::Exception& e){
+      ROS_ERROR("cv_bridge exception: %s", e.what());
+      return;
+    }
+
+    ROS_INFO_STREAM("drawing");
     // Draw an example circle on the video stream
     if (rbgOut_->image.rows > 60 && rbgOut_->image.cols > 60)
     {
@@ -93,20 +125,26 @@ public:
 
     }
 
+    // Update GUI Window
+    ROS_INFO_STREAM("updating image window");
+    cv::imshow(RGB_WINDOW, rbgOut_->image);
+    cv::imshow(DEPTH_WINDOW, depthOut_->image);
+    cv::waitKey(1);
+
     // Output modified video stream
+    ROS_INFO_STREAM("publishing");
     image_pub_.publish(rbgOut_->toImageMsg());
   }
 
   void spin()
   {
+    ROS_INFO_STREAM("spinning");
     ros::Rate rate(30);
     while(ros::ok())
     {
       process();
       ros::spinOnce();
-      // Update GUI Window
-      cv::imshow(RGB_WINDOW, rbgOut_->image);
-      cv::imshow(DEPTH_WINDOW, depthOut_->image);
+      ROS_INFO_STREAM("sleeping");
       rate.sleep();
     }
   }
@@ -115,8 +153,10 @@ public:
 
 int main(int argc, char** argv)
 {
+  ROS_INFO_STREAM("starting node");
   ros::init(argc, argv, "image_converter");
   ImageConverter ic;
   ic.spin();
+  ROS_INFO_STREAM("stopping node");
   return 0;
 }
