@@ -35,8 +35,7 @@ protected:
   cv_bridge::CvImagePtr rbgOut_;
   cv_bridge::CvImagePtr depthOut_;
 
-  cv::Mat HSV;
-  cv::Mat BGR_filtered;
+
 
 
 
@@ -135,6 +134,8 @@ public:
 
     ROS_INFO_STREAM("Applying filter");
     // Filtering
+    cv::Mat HSV;
+    cv::Mat BGR_filtered;
     cv::cvtColor(rbgOut_->image, HSV, CV_BGR2HSV);
     cv::inRange(HSV, cv::Scalar(HueL,SatL,ValL),cv::Scalar(HueH,SatH,ValH),HSV);
     cv::cvtColor(HSV, BGR_filtered, CV_HSV2BGR);
