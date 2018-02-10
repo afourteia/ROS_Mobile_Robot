@@ -133,6 +133,7 @@ public:
       return;
     }
 
+    ROS_INFO_STREAM("Applying filter");
     // Filtering
     cv::cvtColor(rbgOut_->image, HSV, CV_BGR2HSV);
     cv::inRange(HSV, cv::Scalar(HueL,SatL,ValL),cv::Scalar(HueH,SatH,ValH),HSV);
