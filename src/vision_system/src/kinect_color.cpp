@@ -136,8 +136,11 @@ public:
     // Filtering
     cv::Mat HSV;
     cv::Mat BGR_filtered;
+    ROS_INFO_STREAM("converting to HSV");
     cv::cvtColor(rbgOut_->image, HSV, CV_BGR2HSV);
+    ROS_INFO_STREAM("applying limits");
     cv::inRange(HSV, cv::Scalar(HueL,SatL,ValL),cv::Scalar(HueH,SatH,ValH),HSV);
+    ROS_INFO_STREAM("converting to BGR");
     cv::cvtColor(HSV, BGR_filtered, CV_HSV2BGR);
 
     // Update GUI Window
