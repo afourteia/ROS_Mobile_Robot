@@ -59,12 +59,12 @@ public:
     cv::namedWindow(RGB_WINDOW, 1);
     cv::namedWindow(FILTER_WINDOW, 1);
 
-    cv::createTrackbar("Hue Max threshold", FILTER_WINDOW, &HueH, HueH);
-    cv::createTrackbar("Hue Max threshold", FILTER_WINDOW, &HueL, HueH);
-    cv::createTrackbar("Sat Max threshold", FILTER_WINDOW, &SatH, SatH);
-    cv::createTrackbar("Sat Max threshold", FILTER_WINDOW, &SatL, SatH);
-    cv::createTrackbar("Value Max threshold", FILTER_WINDOW, &ValH, ValH);
-    cv::createTrackbar("Value Max threshold", FILTER_WINDOW, &ValL, ValH);
+    cv::createTrackbar("Hue max threshold", FILTER_WINDOW, &HueH, HueH);
+    cv::createTrackbar("Hue min threshold", FILTER_WINDOW, &HueL, HueH);
+    cv::createTrackbar("Sat max threshold", FILTER_WINDOW, &SatH, SatH);
+    cv::createTrackbar("Sat min threshold", FILTER_WINDOW, &SatL, SatH);
+    cv::createTrackbar("Value max threshold", FILTER_WINDOW, &ValH, ValH);
+    cv::createTrackbar("Value min threshold", FILTER_WINDOW, &ValL, ValH);
 
   }
 
