@@ -135,13 +135,17 @@ public:
     ROS_INFO_STREAM("Applying filter");
     // Filtering
     cv::Mat HSV;
+    cv::Mat HSV_mask;
+    cv::Mat HSV_filtered;
     cv::Mat BGR_filtered;
     ROS_INFO_STREAM("converting to HSV");
     cv::cvtColor(rbgOut_->image, HSV, CV_BGR2HSV);
     ROS_INFO_STREAM("applying limits");
-    cv::inRange(HSV, cv::Scalar(HueL,SatL,ValL),cv::Scalar(HueH,SatH,ValH),HSV);
+    cv::inRange(HSV, cv::Scalar(HueL,SatL,ValL),cv::Scalar(HueH,SatH,ValH),HSV_mask);
+    ROS_INFO_STREAM("applying mask");
+    HSV.copyTo(HSV_filtered,HSV_mask);
     ROS_INFO_STREAM("converting to BGR");
-    cv::cvtColor(HSV, BGR_filtered, CV_HSV2BGR);
+    cv::cvtColor(HSV_filtered, BGR_filtered, CV_HSV2BGR);
 
     // Update GUI Window
     ROS_INFO_STREAM("updating image window");
