@@ -197,18 +197,18 @@ public:
       ROS_INFO_STREAM("detecting circles");
        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
        int radius = cvRound(circles[i][2]);
-       ROS_INFO_STREAM("creating the rectangle");
-       cv::Rect r(center.x-radius, center.y-radius, radius*2, radius*2);
-       ROS_INFO_STREAM("creating the ROI");
-       cv::Mat roi(HSV_mask, r);
-       ROS_INFO_STREAM("density check");
-       if (density < cvRound((cv::countNonZero(roi)/(roi.cols*roi.rows))*100))
-       {
-         j = i;
-         target_center = center;
-         target_radius = radius;
-
-       }
+       // ROS_INFO_STREAM("creating the rectangle");
+       // cv::Rect r(center.x-radius, center.y-radius, radius*2, radius*2);
+       // ROS_INFO_STREAM("creating the ROI");
+       // cv::Mat roi(HSV_mask, r);
+       // ROS_INFO_STREAM("density check");
+       // if (density < cvRound((cv::countNonZero(roi)/(roi.cols*roi.rows))*100))
+       // {
+       //   j = i;
+       //   target_center = center;
+       //   target_radius = radius;
+       //
+       // }
 
        // circle center
        cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
