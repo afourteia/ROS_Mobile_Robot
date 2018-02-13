@@ -161,8 +161,8 @@ public:
     ROS_INFO_STREAM("converting to gray");
     cv::cvtColor(rbgOut_->image, gray, CV_BGR2GRAY);
     ROS_INFO_STREAM("detecting circles");
-    // cv::medianBlur(bgr_image, bgr_image, 3);
-    cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma, GaussianBlurSigma );
+    cv::medianBlur(gray, gray, 5);
+    //cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma, GaussianBlurSigma );
     cv::HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 1, gray.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
 
 
