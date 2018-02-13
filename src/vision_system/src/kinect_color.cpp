@@ -188,7 +188,7 @@ public:
     ROS_INFO_STREAM("converting to BGR");
     cv::cvtColor(HSV_filtered, BGR_filtered, CV_HSV2BGR);
 
-    cv::HoughCircles( BGR_filtered, circles, CV_HOUGH_GRADIENT, 1, BGR_filtered.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
+    cv::HoughCircles( HSV_mask, circles, CV_HOUGH_GRADIENT, 1, BGR_filtered.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
 
     int density = 0;
     int j = -1;
