@@ -141,7 +141,7 @@ public:
       rbgOut_ = cv_bridge::toCvCopy(rbgIn, sensor_msgs::image_encodings::BGR8);
     }catch(cv_bridge::Exception& e){
       ROS_ERROR("cv_bridge exception: %s", e.what());
-      return;
+      return; 
     }
 
     try{
