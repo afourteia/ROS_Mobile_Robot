@@ -12,11 +12,11 @@
 static const std::string RGB_WINDOW = "rgb window";
 static const std::string FILTER_WINDOW = "filtered window";
 static const std::string CIRCLE_WINDOW = "circles window";
-/// Global Variables
-int HueH = 255;
-int HueL = 0;
-int SatH = 255;
-int SatL = 0;
+// Blue target
+int HueH = 136;
+int HueL = 123;
+int SatH = 176;
+int SatL = 68;
 int ValH = 255;
 int ValL = 0;
 
@@ -213,8 +213,11 @@ public:
        cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
 
     }
+    if(j <= 0)
+    {
+      cv::circle( gray, target_center, target_radius, cv::Scalar(44,55,155), 10, 6, 0 );
+    }
 
-    cv::circle( gray, target_center, target_radius, cv::Scalar(44,55,155), 10, 6, 0 );
 
     // Update GUI Window
     ROS_INFO_STREAM("updating image window");
