@@ -163,7 +163,7 @@ public:
     ROS_INFO_STREAM("detecting circles");
     cv::medianBlur(gray, gray, 5);
     //cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma, GaussianBlurSigma );
-    cv::HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 1, gray.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
+    //cv::HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 1, gray.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
 
 
     // for( size_t i = 0; i < circles.size(); i++ )
@@ -187,6 +187,8 @@ public:
     HSV.copyTo(HSV_filtered,HSV_mask);
     ROS_INFO_STREAM("converting to BGR");
     cv::cvtColor(HSV_filtered, BGR_filtered, CV_HSV2BGR);
+
+    cv::HoughCircles( BGR_filtered, circles, CV_HOUGH_GRADIENT, 1, BGR_filtered.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
 
     int density = 0;
     int j = -1;
