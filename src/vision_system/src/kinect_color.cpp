@@ -5,10 +5,13 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <ros/console.h>
-#include <opencv2/aruco.hpp>
+#include <iostream>
+#include <stdio.h>
+#include <vector>
 
 static const std::string RGB_WINDOW = "rgb window";
 static const std::string FILTER_WINDOW = "filtered window";
+static const std::string CIRCLE_WINDOW = "circles window";
 /// Global Variables
 int HueH = 255;
 int HueL = 0;
@@ -16,6 +19,11 @@ int SatH = 255;
 int SatL = 0;
 int ValH = 255;
 int ValL = 0;
+
+int cannyThreshold = 100;
+int accumulatorThreshold = 50;
+
+int GaussianBlurSigma = 2;
 
 // int HueH = 227;
 // int HueL = 159;
@@ -42,6 +50,7 @@ protected:
   cv_bridge::CvImagePtr rbgOut_;
   cv_bridge::CvImagePtr depthOut_;
 
+  std::vector<cv::Vec3f> circles;
 
 public:
   ImageConverter()
@@ -59,8 +68,10 @@ public:
 
     image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
-    cv::namedWindow(RGB_WINDOW, 1);
-    cv::namedWindow(FILTER_WINDOW, 1);
+    cv::namedWindow(RGB_WINDOW, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow(FILTER_WINDOW, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow(CIRCLE_WINDOW, CV_WINDOW_AUTOSIZE);
+
 
     cv::createTrackbar("Hue max threshold", FILTER_WINDOW, &HueH, HueH);
     cv::createTrackbar("Hue min threshold", FILTER_WINDOW, &HueL, HueH);
@@ -68,6 +79,10 @@ public:
     cv::createTrackbar("Sat min threshold", FILTER_WINDOW, &SatL, SatH);
     cv::createTrackbar("Value max threshold", FILTER_WINDOW, &ValH, ValH);
     cv::createTrackbar("Value min threshold", FILTER_WINDOW, &ValL, ValH);
+
+    cv::createTrackbar("Canny Threshold", CIRCLE_WINDOW, &cannyThreshold, 200);
+    cv::createTrackbar("Accumulator Threshold", CIRCLE_WINDOW, &accumulatorThreshold, 200);
+    cv::createTrackbar("Gaussian Kernal STD", CIRCLE_WINDOW, &GaussianBlurSigma, 10);
 
   }
 
@@ -137,10 +152,31 @@ public:
 
     ROS_INFO_STREAM("Applying filter");
     // Filtering
+    cv::Mat gray;
     cv::Mat HSV;
     cv::Mat HSV_mask;
     cv::Mat HSV_filtered;
     cv::Mat BGR_filtered;
+    ROS_INFO_STREAM("converting to gray");
+    cv::cvtColor(rbgOut_->image, gray, CV_BGR2GRAY);
+    ROS_INFO_STREAM("detecting circles");
+    // cv::medianBlur(bgr_image, bgr_image, 3);
+    cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma, GaussianBlurSigma );
+    cv::HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 1, gray.rows/10, cannyThreshold, accumulatorThreshold, 0, 0 );
+
+
+    for( size_t i = 0; i < circles.size(); i++ )
+    {
+      ROS_INFO_STREAM("detecting circles");
+       cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+       int radius = cvRound(circles[i][2]);
+       // circle center
+       cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+       // circle outline
+       cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+     }
+
+
     ROS_INFO_STREAM("converting to HSV");
     cv::cvtColor(rbgOut_->image, HSV, CV_BGR2HSV);
     ROS_INFO_STREAM("applying limits");
@@ -154,6 +190,7 @@ public:
     ROS_INFO_STREAM("updating image window");
     cv::imshow(RGB_WINDOW, rbgOut_->image);
     cv::imshow(FILTER_WINDOW, BGR_filtered);
+    cv::imshow(CIRCLE_WINDOW, gray);
 
     cv::waitKey(1);
 
