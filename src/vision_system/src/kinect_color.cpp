@@ -199,6 +199,7 @@ public:
        int radius = cvRound(circles[i][2]);
        ROS_INFO_STREAM("creating the rectangle");
        cv::Rect r(center.x-radius, center.y-radius, radius*2, radius*2);
+
        ROS_INFO_STREAM("creating the ROI");
        cv::Mat roi(HSV_mask, r);
        ROS_INFO_STREAM("density check");
