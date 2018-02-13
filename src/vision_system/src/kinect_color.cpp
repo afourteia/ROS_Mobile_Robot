@@ -200,7 +200,7 @@ public:
        ROS_INFO_STREAM("creating the rectangle");
        cv::Rect r(center.x-radius, center.y-radius, radius*2, radius*2);
       /// adding if statements here
-      if((center.x-radius >= 0 && center.y-radius >= 0 && radius+center.x < gray.cols && center.y+radius < gray.rows))
+      if((center.x-radius > 0 && center.y-radius > 0 && radius+center.x < HSV_mask.cols && center.y+radius < HSV_mask.rows))
       {
         ROS_INFO_STREAM("creating the ROI");
         cv::Mat roi(HSV_mask, r);
