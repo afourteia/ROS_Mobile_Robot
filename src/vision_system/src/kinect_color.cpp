@@ -141,7 +141,7 @@ public:
       rbgOut_ = cv_bridge::toCvCopy(rbgIn, sensor_msgs::image_encodings::BGR8);
     }catch(cv_bridge::Exception& e){
       ROS_ERROR("cv_bridge exception: %s", e.what());
-      return; 
+      return;
     }
 
     try{
@@ -200,16 +200,20 @@ public:
        ROS_INFO_STREAM("creating the rectangle");
        cv::Rect r(center.x-radius, center.y-radius, radius*2, radius*2);
       /// adding if statements here
-       ROS_INFO_STREAM("creating the ROI");
-       cv::Mat roi(HSV_mask, r);
-       ROS_INFO_STREAM("density check");
-       if (density < cvRound((cv::countNonZero(roi)/(roi.cols*roi.rows))*100))
-       {
-         j = i;
-         target_center = center;
-         target_radius = radius;
+      if((center.x-radius >= 0 && center.y-radius >= 0 && radius+center.x < gray.cols && renter.y+radius < gray.rows))
+      {
+        ROS_INFO_STREAM("creating the ROI");
+        cv::Mat roi(HSV_mask, r);
+        ROS_INFO_STREAM("density check");
+        if (density < cvRound((cv::countNonZero(roi)/(roi.cols*roi.rows))*100))
+        {
+          j = i;
+          target_center = center;
+          target_radius = radius;
 
-       }
+        }
+
+      }
 
        // circle center
        cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
