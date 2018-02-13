@@ -26,6 +26,8 @@ int radiusThreshold = 150;
 
 int GaussianBlurSigma = 2;
 
+cv::Mat kernel(5,5,CV_8U,cv::Scalar(1));
+
 // int HueH = 227;
 // int HueL = 159;
 // int SatH = 225;
@@ -183,6 +185,8 @@ public:
     cv::cvtColor(rbgOut_->image, HSV, CV_BGR2HSV);
     ROS_INFO_STREAM("applying limits");
     cv::inRange(HSV, cv::Scalar(HueL,SatL,ValL),cv::Scalar(HueH,SatH,ValH),HSV_mask);
+    cv::morphologyEx(HSV_mask, HSV_mask, 2, kernel );
+    cv::morphologyEx(HSV_mask, HSV_mask, 3, kernel );
     ROS_INFO_STREAM("applying mask");
     HSV.copyTo(HSV_filtered,HSV_mask);
     ROS_INFO_STREAM("converting to BGR");
