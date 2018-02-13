@@ -5,7 +5,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <ros/console.h>
-
+#include <opencv2/aruco.hpp>
 
 static const std::string RGB_WINDOW = "rgb window";
 static const std::string FILTER_WINDOW = "filtered window";
@@ -16,6 +16,13 @@ int SatH = 255;
 int SatL = 0;
 int ValH = 255;
 int ValL = 0;
+
+// int HueH = 227;
+// int HueL = 159;
+// int SatH = 225;
+// int SatL = 183;
+// int ValH = 221;
+// int ValL = 11;
 
 
 class ImageConverter
@@ -34,10 +41,6 @@ protected:
 
   cv_bridge::CvImagePtr rbgOut_;
   cv_bridge::CvImagePtr depthOut_;
-
-
-
-
 
 
 public:
