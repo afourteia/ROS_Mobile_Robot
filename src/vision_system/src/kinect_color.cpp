@@ -22,6 +22,7 @@ int ValL = 0;
 
 int cannyThreshold = 100;
 int accumulatorThreshold = 50;
+int radiusThreshold = 150;
 
 int GaussianBlurSigma = 2;
 
@@ -83,7 +84,7 @@ public:
     cv::createTrackbar("Canny Threshold", CIRCLE_WINDOW, &cannyThreshold, 200);
     cv::createTrackbar("Accumulator Threshold", CIRCLE_WINDOW, &accumulatorThreshold, 200);
     cv::createTrackbar("Gaussian Kernal STD", CIRCLE_WINDOW, &GaussianBlurSigma, 10);
-
+    cv::createTrackbar("Gaussian Kernal STD", CIRCLE_WINDOW, &radiusThreshold, 480);
   }
 
   ~ImageConverter()
@@ -162,19 +163,20 @@ public:
     ROS_INFO_STREAM("detecting circles");
     // cv::medianBlur(bgr_image, bgr_image, 3);
     cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma, GaussianBlurSigma );
-    cv::HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 1, gray.rows/10, cannyThreshold, accumulatorThreshold, 0, 0 );
+    cv::HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 1, gray.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
 
 
-    for( size_t i = 0; i < circles.size(); i++ )
-    {
-      ROS_INFO_STREAM("detecting circles");
-       cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-       int radius = cvRound(circles[i][2]);
-       // circle center
-       cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
-       // circle outline
-       cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
-     }
+    // for( size_t i = 0; i < circles.size(); i++ )
+    // {
+    //   ROS_INFO_STREAM("detecting circles");
+    //    cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+    //    int radius = cvRound(circles[i][2]);
+    //    // circle center
+    //    cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+    //    // circle outline
+    //    cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+    //
+    //  }
 
 
     ROS_INFO_STREAM("converting to HSV");
@@ -185,6 +187,34 @@ public:
     HSV.copyTo(HSV_filtered,HSV_mask);
     ROS_INFO_STREAM("converting to BGR");
     cv::cvtColor(HSV_filtered, BGR_filtered, CV_HSV2BGR);
+
+    int density = 0;
+    int j = -1;
+    int target_radius;
+    cv::Point target_center;
+    for( size_t i = 0; i < circles.size(); i++ )
+    {
+      ROS_INFO_STREAM("detecting circles");
+       cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+       int radius = cvRound(circles[i][2]);
+       cv::Rect r(center.x-radius, center.y-radius, radius*2, radius*2);
+       cv::Mat roi(HSV_mask, r);
+       if (density < cvRound((cv::countNonZero(roi)/(roi.cols*roi.rows))*100))
+       {
+         j = i;
+         target_center = center;
+         target_radius = radius;
+
+       }
+
+       // circle center
+       cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+       // circle outline
+       cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+
+    }
+
+    cv::circle( gray, target_center, target_radius, cv::Scalar(44,55,155), 10, 6, 0 );
 
     // Update GUI Window
     ROS_INFO_STREAM("updating image window");
