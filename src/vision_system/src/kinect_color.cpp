@@ -8,6 +8,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include <geometry_msgs/Vector3.h>
+
 
 static const std::string RGB_WINDOW = "rgb window";
 static const std::string FILTER_WINDOW = "filtered window";
@@ -154,7 +156,7 @@ public:
     }
 
     try{
-      depthOut_ = cv_bridge::toCvCopy(depthIn, sensor_msgs::image_encodings::TYPE_8UC1);
+      depthOut_ = cv_bridge::toCvCopy(depthIn, sensor_msgs::image_encodings::TYPE_16UC1);
     }catch(cv_bridge::Exception& e){
       ROS_ERROR("cv_bridge exception: %s", e.what());
       return;
@@ -210,12 +212,24 @@ public:
       {
         ROS_INFO_STREAM("creating the ROI");
         cv::Mat roi(HSV_mask, r);
+        cv::Mat roi2(depthOut_->image, r);
         ROS_INFO_STREAM("density check");
-        if (density < cvRound((cv::countNonZero(roi)/(roi.cols*roi.rows))*100))
+        int k = (cv::countNonZero(roi)*100.0)/(roi.cols*roi.rows);
+        ROS_INFO_STREAM("Density is " << k);
+        if (density < k)
         {
+          ROS_INFO_STREAM("in the loooooooooop");
+          density = k;
           j = i;
           target_center = center;
           target_radius = radius;
+          float horizontal = (HSV_mask.cols/2) - center.x;
+          target.x = horizontal;
+          cv::Scalar tempVal = mean(roi2);
+          float distance = tempVal.val[0]/1000;
+          target.z = distance;
+
+          ROS_INFO_STREAM("X " << horizontal << "Z" <<  distance);
 
         }
 
@@ -229,10 +243,12 @@ public:
     }
 
 
-    if(j <= 0)
+    if(j >= 0)
     {
       ROS_INFO_STREAM("Drawing the circle");
-      cv::circle( BGR_filtered, target_center, target_radius, cv::Scalar(44,55,155), 10, 6, 0 );
+      cv::circle( BGR_filtered, target_center, target_radius, cv::Scalar(44,55,155), 20, 12, 0 );
+      ROS_INFO_STREAM("X " << target.x << "Z" <<  target.z);
+      goal_pub.publish(target);
 
     }
 
