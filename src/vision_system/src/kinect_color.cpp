@@ -47,6 +47,7 @@ protected:
   image_transport::Subscriber rbg_sub_;
   image_transport::Subscriber depth_sub_;
   image_transport::Publisher image_pub_;
+  ros::Publisher goal_pub;
 
   sensor_msgs::ImageConstPtr rbgIn_;
   sensor_msgs::ImageConstPtr depthIn_;
@@ -55,6 +56,7 @@ protected:
   cv_bridge::CvImagePtr depthOut_;
 
   std::vector<cv::Vec3f> circles;
+  geometry_msgs::Vector3 target;
 
 public:
   ImageConverter()
@@ -66,11 +68,13 @@ public:
     rbg_sub_ = it_.subscribe("/camera/rgb/image_color", 1,
       &ImageConverter::rbgCb, this);
 
-    depth_sub_ = it_.subscribe("/camera/depth/image_raw", 1,
+    depth_sub_ = it_.subscribe("/camera/depth_registered/image_raw", 1,
       &ImageConverter::depthCb, this);
 
 
     image_pub_ = it_.advertise("/image_converter/output_video", 1);
+
+    goal_pub = nh_.advertise<geometry_msgs::Vector3>("target_location", 1);
 
     cv::namedWindow(RGB_WINDOW, CV_WINDOW_NORMAL );
     cv::namedWindow(FILTER_WINDOW, CV_WINDOW_NORMAL);
@@ -229,6 +233,7 @@ public:
     {
       ROS_INFO_STREAM("Drawing the circle");
       cv::circle( BGR_filtered, target_center, target_radius, cv::Scalar(44,55,155), 10, 6, 0 );
+
     }
 
 
