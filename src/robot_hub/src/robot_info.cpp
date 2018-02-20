@@ -95,7 +95,7 @@ void MICA::cbfollowcmd(const geometry_msgs::Vector3& followIncoming)
 {
   target = followIncoming;
   if (follow_state){
-    depth_error = target.z - depth_goal;
+    depth_error = (target.z - depth_goal)/100.0;
     horiz_error = target.x - horiz_goal;
 
     if(fabs(depth_error) < min_error_depth && fabs(horiz_error) < min_error_horiz )

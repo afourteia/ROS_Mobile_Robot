@@ -70,7 +70,7 @@ class MICA{
     static constexpr float depth_goal = 1.2;
     static constexpr float horiz_goal = 320; //640/2
     static constexpr float min_error_depth = 0.2;
-    static constexpr float min_error_horiz = 40;
+    static constexpr float min_error_horiz = 0.3;
 
     static constexpr float DKP = 0.2;
     static constexpr float HKP = 0.5;
