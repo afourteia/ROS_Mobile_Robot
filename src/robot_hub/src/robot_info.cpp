@@ -26,6 +26,11 @@ MICA::MICA(){
   //mcuPub = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
 
   follow_state = 0;
+
+  moduleStatus.layout.dim.push_back(std_msgs::MultiArrayDimension());
+  moduleStatus.layout.dim[0].label = "data";
+  moduleStatus.layout.dim[0].size = 5;
+  moduleStatus.layout.dim[0].stride = 5;
 }
 
 void MICA::cbUkartInfo(const controller_box::UKARTparams& ukartInfoIncoming)
@@ -75,8 +80,15 @@ void MICA::cbMcuInfo(const std_msgs::Int8& mcuInfoIncoming)
 
 }
 
-void MICA::cbiphonecmd(const std_msgs::Int8& iphoneIncoming){
+void MICA::cbiphonecmd(const MICA_message_package::iphone& iphoneIncoming){
+  moduleStatus.data.clear();
+  moduleStatus.data.push_back(iphoneIncoming.y);
+  moduleStatus.data.push_back(iphoneIncoming.t);
+  moduleStatus.data.push_back(iphoneIncoming.x);
+  moduleStatus.data.push_back(iphoneIncoming.h);
+  moduleStatus.data.push_back(iphoneIncoming.mode);
 
+  mcuPub.publish(moduleStatus);
 }
 
 void MICA::cbfollowcmd(const geometry_msgs::Vector3& followIncoming)

@@ -13,6 +13,7 @@
 #include <geometry_msgs/Vector3.h>
 #include "controller_box/UKARTparams.h"
 #include "controller_box/velocity.h"
+#include "MICA_message_package/iphone.h"
 
 class MICA{
   public:
@@ -27,7 +28,7 @@ class MICA{
 
     void cbMcuInfo(const std_msgs::Int8& mcuInfoIncoming);
 
-    void cbiphonecmd(const std_msgs::Int8& iphoneIncoming);
+    void cbiphonecmd(const MICA_message_package::iphone& iphoneIncoming);
 
     void cbfollowcmd(const geometry_msgs::Vector3& followIncoming);
 
@@ -40,6 +41,8 @@ class MICA{
     geometry_msgs::Vector3 target;
 
     controller_box::velocity vel;
+
+     std_msgs::Float32MultiArray moduleStatus;
 
 
     ros::NodeHandle nh;
