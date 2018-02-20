@@ -8,11 +8,11 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int16.h>
-#include <controller_box/UKARTparams.h>
 #include <sensor_msgs/Joy.h>
 #include <std_msgs/Float32MultiArray.h>
-
-
+#include <geometry_msgs/Vector3.h>
+#include "controller_box/UKARTparams.h"
+#include "controller_box/velocity.h"
 
 class MICA{
   public:
@@ -29,12 +29,17 @@ class MICA{
 
     void cbiphonecmd(const std_msgs::Int8& iphoneIncoming);
 
+    void cbfollowcmd(const geometry_msgs::Vector3& followIncoming);
+
     void processNode();
 
   private:
 
     controller_box::UKARTparams ukartinfo;
     std_msgs::Float32MultiArray mcuinfo;
+    geometry_msgs::Vector3 target;
+
+    controller_box::velocity vel;
 
 
     ros::NodeHandle nh;
@@ -47,6 +52,7 @@ class MICA{
     ros::Subscriber mcuSub;
 
     ros::Subscriber iphoneSub;
+    ros::Subscriber followSub;
 
     ros::Publisher guiPub;
     ros::Publisher velocityPub;
@@ -57,7 +63,21 @@ class MICA{
     ros::Publisher changeControlModePub;
     ros::Publisher mcuPub;
 
-    int velScale = 3000;
+    static const int velScale = 3000;
+    static constexpr float depth_goal = 1.2;
+    static constexpr float horiz_goal = 320; //640/2
+    static constexpr float min_error_depth = 0.2;
+    static constexpr float min_error_horiz = 40;
+
+    static constexpr float DKP = 0.2;
+    static constexpr float HKP = 0.5;
+
+
+    int follow_state;
+
+    int  depth_error;
+    int  horiz_error;
+
 
 
 

@@ -9,10 +9,10 @@
         <arg name="depth_registration" value="true" />
     </include>
 
-<!--
+
     <node pkg="vision_system" type="kinect_color_calib" name="kinect_color_calib"/>
 
-
+<!--
 
     <node pkg="motor_driver" type="motor_driver" name="motor_driver" respawn="true"/>
 -->

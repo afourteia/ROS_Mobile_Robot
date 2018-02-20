@@ -223,7 +223,7 @@ public:
           j = i;
           target_center = center;
           target_radius = radius;
-          float horizontal = (HSV_mask.cols/2) - center.x;
+          float horizontal = center.x;
           target.x = horizontal;
           cv::Scalar tempVal = mean(roi2);
           float distance = tempVal.val[0]/1000;
