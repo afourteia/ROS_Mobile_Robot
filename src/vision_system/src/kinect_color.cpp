@@ -26,6 +26,9 @@ int radiusThreshold = 150;
 
 int GaussianBlurSigma = 2;
 
+int morph_elem = 0;
+int morph_size  = 0;
+
 // int HueH = 227;
 // int HueL = 159;
 // int SatH = 225;
@@ -69,22 +72,24 @@ public:
 
     image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
-    cv::namedWindow(RGB_WINDOW, CV_WINDOW_AUTOSIZE);
-    cv::namedWindow(FILTER_WINDOW, CV_WINDOW_AUTOSIZE);
-    cv::namedWindow(CIRCLE_WINDOW, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow(RGB_WINDOW, CV_WINDOW_NORMAL );
+    cv::namedWindow(FILTER_WINDOW, CV_WINDOW_NORMAL);
+    cv::namedWindow(CIRCLE_WINDOW, CV_WINDOW_NORMAL);
 
 
-    cv::createTrackbar("Hue max threshold", FILTER_WINDOW, &HueH, HueH);
-    cv::createTrackbar("Hue min threshold", FILTER_WINDOW, &HueL, HueH);
-    cv::createTrackbar("Sat max threshold", FILTER_WINDOW, &SatH, SatH);
-    cv::createTrackbar("Sat min threshold", FILTER_WINDOW, &SatL, SatH);
-    cv::createTrackbar("Value max threshold", FILTER_WINDOW, &ValH, ValH);
-    cv::createTrackbar("Value min threshold", FILTER_WINDOW, &ValL, ValH);
+    cv::createTrackbar("Hue max threshold", FILTER_WINDOW, &HueH, 255);
+    cv::createTrackbar("Hue min threshold", FILTER_WINDOW, &HueL, 255);
+    cv::createTrackbar("Sat max threshold", FILTER_WINDOW, &SatH, 255);
+    cv::createTrackbar("Sat min threshold", FILTER_WINDOW, &SatL, 255);
+    cv::createTrackbar("Value max threshold", FILTER_WINDOW, &ValH, 255);
+    cv::createTrackbar("Value min threshold", FILTER_WINDOW, &ValL, 255);
 
     cv::createTrackbar("Canny Threshold", CIRCLE_WINDOW, &cannyThreshold, 200);
     cv::createTrackbar("Accumulator Threshold", CIRCLE_WINDOW, &accumulatorThreshold, 200);
     cv::createTrackbar("Gaussian Kernal STD", CIRCLE_WINDOW, &GaussianBlurSigma, 10);
-    cv::createTrackbar("Gaussian Kernal STD", CIRCLE_WINDOW, &radiusThreshold, 480);
+    cv::createTrackbar("Radius Threshold", CIRCLE_WINDOW, &radiusThreshold, 480);
+    cv::createTrackbar("Morphology kernal R:0, C:0 Shape", CIRCLE_WINDOW, &morph_elem, 1);
+    cv::createTrackbar("Morphology kernal size", CIRCLE_WINDOW, &morph_size, 5);
   }
 
   ~ImageConverter()
@@ -153,37 +158,34 @@ public:
 
     ROS_INFO_STREAM("Applying filter");
     // Filtering
+    cv::Mat BGR;
     cv::Mat gray;
     cv::Mat HSV;
     cv::Mat HSV_mask;
     cv::Mat HSV_filtered;
     cv::Mat BGR_filtered;
+    cv::Mat element = cv::getStructuringElement( morph_elem, cv::Size( 2*morph_size + 1, 2*morph_size+1 ));
+
+    ROS_INFO_STREAM("Smothing");
+    cv::medianBlur(rbgOut_->image, BGR, 5);
+    //cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma );
+
     ROS_INFO_STREAM("converting to gray");
-    cv::cvtColor(rbgOut_->image, gray, CV_BGR2GRAY);
-    ROS_INFO_STREAM("detecting circles");
+    cv::cvtColor(BGR, gray, CV_BGR2GRAY);
     cv::medianBlur(gray, gray, 5);
-    //cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma, GaussianBlurSigma );
-    cv::HoughCircles( gray, circles, CV_HOUGH_GRADIENT, 1, gray.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
+    //cv::GaussianBlur( gray, gray, cv::Size(9, 9), GaussianBlurSigma );
 
-
-    // for( size_t i = 0; i < circles.size(); i++ )
-    // {
-    //   ROS_INFO_STREAM("detecting circles");
-    //    cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-    //    int radius = cvRound(circles[i][2]);
-    //    // circle center
-    //    cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
-    //    // circle outline
-    //    cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
-    //
-    //  }
 
 
     ROS_INFO_STREAM("converting to HSV");
-    cv::cvtColor(rbgOut_->image, HSV, CV_BGR2HSV);
+    cv::cvtColor(BGR, HSV, CV_BGR2HSV);
     ROS_INFO_STREAM("applying limits");
     cv::inRange(HSV, cv::Scalar(HueL,SatL,ValL),cv::Scalar(HueH,SatH,ValH),HSV_mask);
-    ROS_INFO_STREAM("applying mask");
+    cv::morphologyEx(HSV_mask, HSV_mask, 2,element);  //Open
+    // cv::morphologyEx(HSV_mask, HSV_mask, 3,element);  //Close
+    cv::GaussianBlur( HSV_mask, HSV_mask, cv::Size(9, 9), GaussianBlurSigma);
+    ROS_INFO_STREAM("HoughCircles");
+    cv::HoughCircles( HSV_mask, circles, CV_HOUGH_GRADIENT, 1, HSV_mask.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
     HSV.copyTo(HSV_filtered,HSV_mask);
     ROS_INFO_STREAM("converting to BGR");
     cv::cvtColor(HSV_filtered, BGR_filtered, CV_HSV2BGR);
@@ -216,9 +218,9 @@ public:
       }
 
        // circle center
-       cv::circle( gray, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+       cv::circle( BGR, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
        // circle outline
-       cv::circle( gray, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+       cv::circle( BGR, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
 
     }
 
@@ -226,17 +228,17 @@ public:
     if(j <= 0)
     {
       ROS_INFO_STREAM("Drawing the circle");
-      cv::circle( gray, target_center, target_radius, cv::Scalar(44,55,155), 10, 6, 0 );
+      cv::circle( BGR_filtered, target_center, target_radius, cv::Scalar(44,55,155), 10, 6, 0 );
     }
 
 
     // Update GUI Window
     ROS_INFO_STREAM("updating image window");
-    cv::imshow(RGB_WINDOW, rbgOut_->image);
+    cv::imshow(RGB_WINDOW, BGR);
     cv::imshow(FILTER_WINDOW, BGR_filtered);
-    cv::imshow(CIRCLE_WINDOW, gray);
+    cv::imshow(CIRCLE_WINDOW, HSV_mask);
 
-    cv::waitKey(1);
+    cv::waitKey(3);
 
     // Output modified video stream
     ROS_INFO_STREAM("publishing");
