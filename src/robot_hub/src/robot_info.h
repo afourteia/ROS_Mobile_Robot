@@ -42,7 +42,7 @@ class MICA{
 
     controller_box::velocity vel;
 
-     std_msgs::Float32MultiArray moduleStatus;
+    std_msgs::Float32MultiArray moduleStatus;
 
 
     ros::NodeHandle nh;
@@ -65,6 +65,8 @@ class MICA{
     ros::Publisher clearErrorPub;
     ros::Publisher changeControlModePub;
     ros::Publisher mcuPub;
+
+    ros::Publisher iphonePub;
 
     static const int velScale = 3000;
     static constexpr float depth_goal = 1.2;
