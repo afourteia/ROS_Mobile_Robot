@@ -3,7 +3,7 @@
 #include <std_msgs/Int8.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/Twist.h>
-
+#include <MICA_message_package/iphone.h>
 
 MICA::MICA(){
 
@@ -12,7 +12,8 @@ MICA::MICA(){
 	xboxController = nh.subscribe("joy",1,&MICA::cbXboxController, this); 	// Subscribe to "IMU_calibrate_command"
 	mcuSub = nh.subscribe("mcu_info",1,&MICA::cbMcuInfo, this); 	// Subscribe to "motor_rls_command"
 
-  iphoneSub = nh.subscribe("iphone_control",1,&MICA::cbiphonecmd, this);
+  // iphoneSub = nh.subscribe("iphone_control",1,&MICA::cbiphonecmd, this);
+  iphoneSub = nh.subscribe("test",1,&MICA::cbiphonecmd, this);
   followSub = nh.subscribe("target_location",1,&MICA::cbfollowcmd, this);
 
 
@@ -25,7 +26,9 @@ MICA::MICA(){
   changeControlModePub = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
   //mcuPub = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
 
-  iphonePub = nh.advertise<geometry_msgs::Twist>("test",1);
+  //iphonePub = nh.advertise<geometry_msgs::Twist>("test",1);
+
+  iphonePub = nh.advertise<MICA_message_package::iphone>("test",1);
 
   follow_state = 0;
 
@@ -84,11 +87,11 @@ void MICA::cbMcuInfo(const std_msgs::Int8& mcuInfoIncoming)
 
 void MICA::cbiphonecmd(const MICA_message_package::iphone& iphoneIncoming){
   moduleStatus.data.clear();
-  moduleStatus.data.push_back(iphoneIncoming.y);
-  moduleStatus.data.push_back(iphoneIncoming.t);
   moduleStatus.data.push_back(iphoneIncoming.x);
+  moduleStatus.data.push_back(iphoneIncoming.y);
+  moduleStatus.data.push_back(iphoneIncoming.z);
   moduleStatus.data.push_back(iphoneIncoming.h);
-  moduleStatus.data.push_back(iphoneIncoming.mode);
+  moduleStatus.data.push_back(iphoneIncoming.m);
 
   mcuPub.publish(moduleStatus);
 }

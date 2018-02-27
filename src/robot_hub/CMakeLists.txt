@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   controller_box
+  MICA_message_package
 )
 
 ## System dependencies are found with CMake's conventions
