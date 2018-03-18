@@ -10,6 +10,7 @@
 #include <std_msgs/Int16.h>
 #include <sensor_msgs/Joy.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/Int32MultiArray.h>
 #include <geometry_msgs/Vector3.h>
 #include "controller_box/UKARTparams.h"
 #include "controller_box/velocity.h"
@@ -42,7 +43,7 @@ class MICA{
 
     controller_box::velocity vel;
 
-    std_msgs::Float32MultiArray moduleStatus;
+    std_msgs::Int32MultiArray moduleStatus;
 
 
     ros::NodeHandle nh;

@@ -2,6 +2,8 @@
 #include <controller_box/velocity.h>
 #include <std_msgs/Int8.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/Int32MultiArray.h>
+
 #include <geometry_msgs/Twist.h>
 #include <MICA_message_package/iphone.h>
 
@@ -25,6 +27,7 @@ MICA::MICA(){
   clearErrorPub = nh.advertise<std_msgs::Int8>("clear_error_command",1);
   changeControlModePub = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
   //mcuPub = nh.advertise<std_msgs::Int8>("Wire_control_mode",1);
+  mcuPub = nh.advertise<std_msgs::Int32MultiArray>("module_command",1);
 
   //iphonePub = nh.advertise<geometry_msgs::Twist>("test",1);
 
