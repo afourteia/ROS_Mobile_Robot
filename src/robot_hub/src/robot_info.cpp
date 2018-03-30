@@ -33,7 +33,7 @@ MICA::MICA(){
 
   iphonePub = nh.advertise<MICA_message_package::iphone>("test",1);
 
-  follow_state = 0;
+  follow_state = 1;
 
   moduleStatus.layout.dim.push_back(std_msgs::MultiArrayDimension());
   moduleStatus.layout.dim[0].label = "data";
@@ -104,7 +104,7 @@ void MICA::cbfollowcmd(const geometry_msgs::Vector3& followIncoming)
   target = followIncoming;
   if (follow_state){
     depth_error = (target.z - depth_goal)/100.0;
-    horiz_error = target.x - horiz_goal;
+    horiz_error = -(target.x - horiz_goal)/100.0;
 
     if(fabs(depth_error) < min_error_depth && fabs(horiz_error) < min_error_horiz )
     {

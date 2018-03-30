@@ -70,19 +70,19 @@ class MICA{
     ros::Publisher iphonePub;
 
     static const int velScale = 3000;
-    static constexpr float depth_goal = 1.2;
-    static constexpr float horiz_goal = 320; //640/2
+    static constexpr float depth_goal = 1.5;
+    static constexpr float horiz_goal = 0;    // center of the image
     static constexpr float min_error_depth = 0.2;
     static constexpr float min_error_horiz = 0.3;
 
-    static constexpr float DKP = 0.2;
-    static constexpr float HKP = 0.5;
+    static constexpr float DKP = 4.2;
+    static constexpr float HKP = 0.05;
 
 
     int follow_state;
 
-    int  depth_error;
-    int  horiz_error;
+    float  depth_error;
+    float  horiz_error;
 
 
 
