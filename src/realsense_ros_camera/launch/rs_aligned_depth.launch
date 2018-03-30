@@ -35,6 +35,7 @@
   <arg name="enable_sync"         default="true"/>
   <arg name="align_depth"         default="true"/>
 
+
   <group ns="camera">
     <include file="$(find realsense_ros_camera)/launch/includes/nodelet.launch.xml">
       <arg name="serial_no"                value="$(arg serial_no)"/>

@@ -3,13 +3,11 @@
 <launch>
     <arg name="camera" default="camera" />
 
-
-
-    <!-- <node
+    <node
       pkg="vision_system"
       type="kinect_color_calib"
       name="kinect_color_calib"
-    /> -->
+    />
 
     <node
       pkg="robot_hub"
@@ -36,14 +34,9 @@
       file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
     </include>
 
-
-    <!-- kinect camera-->
-    <!-- <include
-        file="$(find freenect_launch)/launch/freenect.launch">
-        <arg name="camera" default="$(arg camera)"/>
-        <arg name="depth_registration" value="true" />
-    </include> -->
-
-
+    <!-- Intel D415 realsense camera-->
+    <include
+      file="$(realsense_ros_camera)/launch/vision_module.launch">
+    </include>
 
 </launch>

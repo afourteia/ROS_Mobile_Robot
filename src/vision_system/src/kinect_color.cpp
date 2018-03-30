@@ -14,6 +14,8 @@
 static const std::string RGB_WINDOW = "rgb window";
 static const std::string FILTER_WINDOW = "filtered window";
 static const std::string CIRCLE_WINDOW = "circles window";
+static const std::string DEPTH_WINDOW = "depth window";
+
 // Blue target
 int HueH = 136;
 int HueL = 123;
@@ -24,7 +26,8 @@ int ValL = 0;
 
 int cannyThreshold = 100;
 int accumulatorThreshold = 50;
-int radiusThreshold = 150;
+int MaxRadiusThreshold = 150;
+int MinRadiusThreshold = 30;
 
 int GaussianBlurSigma = 2;
 
@@ -67,10 +70,10 @@ public:
     // Subscrive to input video feed and publish output video feed
 
     ROS_INFO_STREAM("Creating an IC object");
-    rbg_sub_ = it_.subscribe("/camera/rgb/image_color", 1,
+    rbg_sub_ = it_.subscribe("/camera/color/image_raw", 1,
       &ImageConverter::rbgCb, this);
 
-    depth_sub_ = it_.subscribe("/camera/depth_registered/image_raw", 1,
+    depth_sub_ = it_.subscribe("/camera/depth/image_rect_raw", 1,
       &ImageConverter::depthCb, this);
 
 
@@ -81,6 +84,7 @@ public:
     cv::namedWindow(RGB_WINDOW, CV_WINDOW_NORMAL );
     cv::namedWindow(FILTER_WINDOW, CV_WINDOW_NORMAL);
     cv::namedWindow(CIRCLE_WINDOW, CV_WINDOW_NORMAL);
+    cv::namedWindow(DEPTH_WINDOW, CV_WINDOW_NORMAL);
 
 
     cv::createTrackbar("Hue max threshold", FILTER_WINDOW, &HueH, 255);
@@ -93,7 +97,8 @@ public:
     cv::createTrackbar("Canny Threshold", CIRCLE_WINDOW, &cannyThreshold, 200);
     cv::createTrackbar("Accumulator Threshold", CIRCLE_WINDOW, &accumulatorThreshold, 200);
     cv::createTrackbar("Gaussian Kernal STD", CIRCLE_WINDOW, &GaussianBlurSigma, 10);
-    cv::createTrackbar("Radius Threshold", CIRCLE_WINDOW, &radiusThreshold, 480);
+    cv::createTrackbar("Max Radius Threshold", CIRCLE_WINDOW, &MaxRadiusThreshold,1000);
+    cv::createTrackbar("Min Radius Threshold", CIRCLE_WINDOW, &MinRadiusThreshold,1000);
     cv::createTrackbar("Morphology kernal R:0, C:0 Shape", CIRCLE_WINDOW, &morph_elem, 1);
     cv::createTrackbar("Morphology kernal size", CIRCLE_WINDOW, &morph_size, 5);
   }
@@ -191,7 +196,7 @@ public:
     // cv::morphologyEx(HSV_mask, HSV_mask, 3,element);  //Close
     cv::GaussianBlur( HSV_mask, HSV_mask, cv::Size(9, 9), GaussianBlurSigma);
     ROS_INFO_STREAM("HoughCircles");
-    cv::HoughCircles( HSV_mask, circles, CV_HOUGH_GRADIENT, 1, HSV_mask.rows/10, cannyThreshold, accumulatorThreshold, 0, radiusThreshold );
+    cv::HoughCircles( HSV_mask, circles, CV_HOUGH_GRADIENT, 1, HSV_mask.rows/5, cannyThreshold, accumulatorThreshold, MinRadiusThreshold, MaxRadiusThreshold );
     HSV.copyTo(HSV_filtered,HSV_mask);
     ROS_INFO_STREAM("converting to BGR");
     cv::cvtColor(HSV_filtered, BGR_filtered, CV_HSV2BGR);
@@ -223,8 +228,8 @@ public:
           j = i;
           target_center = center;
           target_radius = radius;
-          float horizontal = center.x;
-          target.x = horizontal;
+          int horizontal = center.x;
+          target.x = horizontal - (HSV_mask.cols/2);
           cv::Scalar tempVal = mean(roi2);
           float distance = tempVal.val[0]/1000;
           target.z = distance;
@@ -258,6 +263,7 @@ public:
     cv::imshow(RGB_WINDOW, BGR);
     cv::imshow(FILTER_WINDOW, BGR_filtered);
     cv::imshow(CIRCLE_WINDOW, HSV_mask);
+    cv::imshow(DEPTH_WINDOW, depthOut_->image);
 
     cv::waitKey(3);
 
