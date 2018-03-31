@@ -17,6 +17,9 @@ int cntlrModecmd = 0;
 int sensorcalib = 0;
 uint8_t publishFlag = 0;
 
+double velcmd_receipt_time;
+
+
 //global kart object
 UKART kart;
 
@@ -24,6 +27,7 @@ UKART kart;
 void cbmotorCommands(const controller_box::velocity& vel){
 	linVelcmd = vel.linear;
 	angVelcmd = vel.angular;
+	velcmd_receipt_time = vel.getReceiptTime().toSec();
 	ROS_INFO_STREAM("I See Linear " << linVelcmd << "& Angular " <<  angVelcmd);
 }
 
@@ -105,15 +109,21 @@ int main(int argc, char **argv){
 	//ros::Publisher UKARTdiagPub = nh.advertise<controller_box::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
 
 
-	ros::Rate rate(30); // Contoller box sends at 40hz
-
+	ros::Rate rate(100); // Contoller box sends at 40hz
+	double time_now;
 
 	controller_box::UKARTparams ukartinfo;
 	//controller_box::UKARTdiag ukartInfo;
 
 	while(ros::ok()){
 
-		//Set the velocity commands
+		//Check Timer and Set the velocity commands
+		time_now = ros::Time::now().toSec();
+		velcmd_receipt_time
+		if (time_now - velcmd_receipt_time > 1)
+			linVelcmd = 0;
+			angVelcmd = 0;
+		}		
 		kart.setVelocity(linVelcmd,angVelcmd);
 		// Check for other commands
 		kart.beep(beepcmd);

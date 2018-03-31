@@ -7,7 +7,8 @@
 #include <geometry_msgs/Twist.h>
 #include <MICA_message_package/iphone.h>
 
-MICA::MICA(){
+MICA::MICA()
+{
 
   uKartSub = nh.subscribe("ukart_parameters",1,&MICA::cbUkartInfo, this);		// Subscribe to "kart_velocity" topic
 	guiSub = nh.subscribe("gui_commands",1,&MICA::cbGuiInfo, this);		// Subscribe to "beep_command"

@@ -1,7 +1,14 @@
 <?xml version="1.0"?>
 
 <launch>
-    <arg name="camera" default="camera" />
+    <arg name="camera"                default="camera" />
+
+    <!-- Joy stick arguments  -->
+    <arg name="~deadzone"             default="0.2" />
+    <arg name="~autorepeat_rate"      default="10" />
+    <arg name="~coalesce_interval"    default="0.001" />
+
+
 
     <node
       pkg="vision_system"
@@ -21,12 +28,14 @@
       type="driver_node"
       name="driver_node"
       respawn="true"
+      output="screen"
     />
 
     <node
       pkg="joy"
       type="joy_node"
       name="joy_node"
+      respawn="true"
     />
 
     <!-- rosbridge -->
