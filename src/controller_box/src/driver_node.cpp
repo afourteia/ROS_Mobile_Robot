@@ -123,6 +123,7 @@ int main(int argc, char **argv){
 		if (time_now - velcmd_receipt_time > 1)
 			linVelcmd = 0;
 			angVelcmd = 0;
+			ROS_WARN_STREAM("It's been over a second since the last velocity command")
 		}		
 		kart.setVelocity(linVelcmd,angVelcmd);
 		// Check for other commands
