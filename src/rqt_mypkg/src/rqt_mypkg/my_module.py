@@ -56,6 +56,10 @@ class MyPlugin(Plugin):
         # setup callback functions for buttons
         self._widget.release_motor_button.clicked.connect(self.releaseMotorcmd)
 
+        # Add some style sheet
+        self.flagged    = """ QLabel { background-color: rgb(255, 0, 0);}"""
+        self.unflagged  = """ QLabel { background-color: rgb(0, 255, 0);}"""
+
         # setup timer
         # self._timer = QTimer()
         # self._timer.timeout.connect(self._update_message_state)
@@ -67,6 +71,10 @@ class MyPlugin(Plugin):
 
     def subscriber_cb(self, data):
         print "Done"
+        if (data.data == "HI"):
+            self._widget.bus_error.setStyleSheet(self.flagged)
+        else:
+            self._widget.bus_error.setStyleSheet(self.unflagged)
 
 
     def shutdown_plugin(self):
