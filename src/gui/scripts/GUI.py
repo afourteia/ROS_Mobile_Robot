@@ -1,20 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 17 17:24:48 2018
 
-@author: joell
-"""
-from PyQt5 import QtCore, QtGui, uic, QtWidgets  # Import the PyQt4 module we'll need
-import sys  # We need sys so that we can pass argv to QApplication
+from PyQt5 import QtCore, QtGui, uic, QtWidgets
+import sys
 
-
-something = 1
-
-#suscribe from out here and write to a local variable to update on the screen
 
 class MainScreen(QtWidgets.QMainWindow):
     def __init__(self):
-        global something
         '''
         This is the main screen that the user interacts with.
 
@@ -22,45 +12,56 @@ class MainScreen(QtWidgets.QMainWindow):
         super(self.__class__, self).__init__()
         uic.loadUi('TestingScreen.ui', self)
 
-        self.pushButton.clicked.connect(self.joystickButton)
-        self.pushButton_2.clicked.connect(self.followModeButton)
-        self.pushButton_3.clicked.connect(self.beepButton)
-        self.pushButton_4.clicked.connect(self.motorReleaseButton)
-
-        self.verticalSlider.sliderMoved.connect(self.leftSetpointSlider)
-        self.verticalSlider_2.sliderMoved.connect(self.rightSetpointSlider)
-        self.verticalSlider_3.sliderMoved.connect(self.leftActualtSlider)
-        self.verticalSlider_4.sliderMoved.connect(self.rightActualSlider)
+        self.release_motor_button.clicked.connect(self.releaseMotorcmd)
+        self.beep_button.clicked.connect(self.beepcmd)
+        self.activate_joy_button.clicked.connect(self.activateJoycmd)
+        self.activate_follow_mode_button.clicked.connect(self.followModecmd)
+        self.calibrate_IMU_button.clicked.connect(self.calibrateIMUcmd)
+        self.enter_wire_control_mode_button.clicked.connect(self.enterWireCTRLcmd)
+        self.exit_wire_control_mode_button.clicked.connect(self.exitWireCTRLcmd)
+        self.clear_error_messages_button.clicked.connect(self.clearErrorcmd)
 
 
         timer = QtCore.QTimer(self)
         timer.timeout.connect(self.updateFromGlobal)
         timer.start(100)
 
-    def updateFromGlobal(self):
+    def releaseMotorcmd(self):
         print "update"
-    def joystickButton(self):
+
+    def beepcmd(self):
         print "Joystick button pressed"
-    def followModeButton(self):
+
+    def activateJoycmd(self):
         print "Follow button pressed"
-    def beepButton(self):
+
+    def followModecmd(self):
         print "Beep button pressed"
-    def motorReleaseButton(self):
+
+    def calibrateIMUcmd(self):
         print "Motor Release button pressed"
-    def leftSetpointSlider(self,value):
+
+    def enterWireCTRLcmd(self,value):
         global something
         #publish from in here
         print "left setpoint slider moved"
-    def rightSetpointSlider(self,value):
+
+    def exitWireCTRLcmd(self,value):
         print "right setpoint slider moved"
-    def leftActualtSlider(self,value):
+
+    def clearErrorcmd(self,value):
         print "left actual slider moved"
-    def rightActualSlider(self,value):
-        print "right actual slider moved"
+
+def startGUI():
+    app = QtWidgets.QApplication(sys.argv)  # A new instance of QApplication
+    form = MainScreen()  # We set the form to be our ExampleApp (design)
+    form.show()  # Show the form
+    app.exec_()  # and execute the app
+
+def initROS():
 
 
-# start main ros nodes here
-app = QtWidgets.QApplication(sys.argv)  # A new instance of QApplication
-form = MainScreen()  # We set the form to be our ExampleApp (design)
-form.show()  # Show the form
-app.exec_()  # and execute the app
+if(__name__=="__main__"):
+
+    initROS()
+    startGUI()

@@ -24,15 +24,17 @@ double velcmd_receipt_time;
 UKART kart;
 
 // Velocity commands callback function
-void cbmotorCommands(const controller_box::velocity& vel){
+void cbmotorCommands(const controller_box::velocity& vel)
+{
 	linVelcmd = vel.linear;
 	angVelcmd = vel.angular;
-	velcmd_receipt_time = vel.getReceiptTime().toSec();
+	//velcmd_receipt_time = vel.getReceiptTime().toSec();
 	ROS_INFO_STREAM("I See Linear " << linVelcmd << "& Angular " <<  angVelcmd);
 }
 
 // Beep commands callback function
-void cbbeepCommands(const std_msgs::Int8& msg){
+void cbbeepCommands(const std_msgs::Int8& msg)
+{
 	beepcmd = msg.data;
 }
 
@@ -42,19 +44,23 @@ void cbcalibrateCommands(const std_msgs::Int8& msg){
 }
 
 // Clear error callback function
-void cbclearerrorCommands(const std_msgs::Int8& msg){
+void cbclearerrorCommands(const std_msgs::Int8& msg)
+{
 	clrErrorcmd = msg.data;
 }
 
 // release motor callback function
-void cbmotorreleaseCommands(const std_msgs::Int8& msg){
+void cbmotorreleaseCommands(const std_msgs::Int8& msg)
+{
 	rlsmotorcmd = msg.data;
 }
 
-void cbWireControlModeCommands(const std_msgs::Int8& msg){
+void cbWireControlModeCommands(const std_msgs::Int8& msg)
+{
 	cntlrModecmd = msg.data;
 }
-void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo){
+void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo)
+{
 
 	ukartinfo.ctlMode = kart.ctlmodeACK;
 
@@ -92,7 +98,8 @@ void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo){
 
 }
 
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
 
 	//Initialize ROS node
 	ros::init(argc,argv,"driver_node");		// Node name
@@ -115,16 +122,18 @@ int main(int argc, char **argv){
 	controller_box::UKARTparams ukartinfo;
 	//controller_box::UKARTdiag ukartInfo;
 
-	while(ros::ok()){
+	while(ros::ok())
+	{
 
 		//Check Timer and Set the velocity commands
 		time_now = ros::Time::now().toSec();
-		velcmd_receipt_time
+		velcmd_receipt_time;
 		if (time_now - velcmd_receipt_time > 1)
+		{
 			linVelcmd = 0;
 			angVelcmd = 0;
-			ROS_WARN_STREAM("It's been over a second since the last velocity command")
-		}		
+			ROS_WARN_STREAM("It's been over a second since the last velocity command");
+		}
 		kart.setVelocity(linVelcmd,angVelcmd);
 		// Check for other commands
 		kart.beep(beepcmd);
@@ -142,7 +151,8 @@ int main(int argc, char **argv){
 
 		publishFlag = kart.checkReceivedData();
 
-		if(!(publishFlag == 0xFF)){
+		if(!(publishFlag == 0xFF))
+		{
 			loadROSKARTmessage(ukartinfo);
 			//ukartinfo.header.stamp = ros::Time::now();
 			//msg.header.frace_id = "/world";

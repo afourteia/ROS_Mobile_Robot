@@ -10,7 +10,7 @@
 MICA::MICA()
 {
 
-  uKartSub = nh.subscribe("ukart_parameters",1,&MICA::cbUkartInfo, this);		// Subscribe to "kart_velocity" topic
+  uKartSub = nh.subscribe("Ukart_parameters",1,&MICA::cbUkartInfo, this);		// Subscribe to "kart_velocity" topic
 	guiSub = nh.subscribe("gui_commands",1,&MICA::cbGuiInfo, this);		// Subscribe to "beep_command"
 	xboxController = nh.subscribe("joy",1,&MICA::cbXboxController, this); 	// Subscribe to "IMU_calibrate_command"
 	mcuSub = nh.subscribe("mcu_info",1,&MICA::cbMcuInfo, this); 	// Subscribe to "motor_rls_command"
