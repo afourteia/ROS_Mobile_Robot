@@ -1,10 +1,10 @@
 import os
-import rospy
 import rospkg
+import rospy
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from python_qt_binding.QtGui import QWidget
+from python_qt_binding.QtWidgets import QWidget
 
 class MyPlugin(Plugin):
 
@@ -28,7 +28,8 @@ class MyPlugin(Plugin):
 
         # Create QWidget
         self._widget = QWidget()
-        # Get path to UI file which should be in the "resource" folder of this package
+        # Get path to UI file which is a sibling of this file
+        # in this example the .ui and .py file are in the same folder
         ui_file = os.path.join(rp.get_path('rqt_mypkg'), 'resource', 'MyPlugin.ui')
         # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
@@ -61,4 +62,4 @@ class MyPlugin(Plugin):
     #def trigger_configuration(self):
         # Comment in to signal that the plugin has a way to configure
         # This will enable a setting button (gear icon) in each dock widget title bar
-        # Usually used to open a modal configuration dialog
+# Usually used to open a modal configuration dialog
