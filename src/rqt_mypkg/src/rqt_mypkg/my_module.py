@@ -1,10 +1,15 @@
 import os
-import rospkg
 import rospy
+import rospkg
+
+import std_msgs.msg
+from controller_box.msg import UKARTdiag
+from controller_box.msg import UKARTparams
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from python_qt_binding.QtWidgets import QWidget
+from python_qt_binding.QtCore import Qt, QTimer, Slot
+from python_qt_binding.QtWidgets import QShortcut, QWidget
 
 class MyPlugin(Plugin):
 
@@ -28,8 +33,7 @@ class MyPlugin(Plugin):
 
         # Create QWidget
         self._widget = QWidget()
-        # Get path to UI file which is a sibling of this file
-        # in this example the .ui and .py file are in the same folder
+        # Get path to UI file which should be in the "resource" folder of this package
         ui_file = os.path.join(rp.get_path('rqt_mypkg'), 'resource', 'MyPlugin.ui')
         # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
@@ -44,6 +48,26 @@ class MyPlugin(Plugin):
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
+
+        # Add publisher
+        self._publisher = rospy.Publisher("testing", std_msgs.msg.String)
+        self._subscriber = rospy.Subscriber("chatter", std_msgs.msg.String, self.subscriber_cb)
+
+        # setup callback functions for buttons
+        self._widget.release_motor_button.clicked.connect(self.releaseMotorcmd)
+
+        # setup timer
+        # self._timer = QTimer()
+        # self._timer.timeout.connect(self._update_message_state)
+        # self._timer.start(100)
+
+    def releaseMotorcmd(self):
+        print "update"
+        self._publisher.publish("HELLOOO")
+
+    def subscriber_cb(self, data):
+        print "Done"
+
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
@@ -62,4 +86,4 @@ class MyPlugin(Plugin):
     #def trigger_configuration(self):
         # Comment in to signal that the plugin has a way to configure
         # This will enable a setting button (gear icon) in each dock widget title bar
-# Usually used to open a modal configuration dialog
+        # Usually used to open a modal configuration dialog
