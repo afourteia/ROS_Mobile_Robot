@@ -5,8 +5,9 @@
 
     <!-- Joy stick arguments  -->
     <arg name="~deadzone"             default="0.2" />
-    <arg name="~autorepeat_rate"      default="10" />
-    <arg name="~coalesce_interval"    default="0.001" />
+    <!-- <arg name="~autorepeat_rate"      default="10" />
+    <arg name="~coalesce_interval"    default="0.001" /> -->
+
 
 
 
@@ -32,11 +33,13 @@
     />
 
     <node
-      pkg="joy"
-      type="joy_node"
-      name="joy_node"
-      respawn="true"
-    />
+        pkg="joy"
+        type="joy_node"
+        name="joy_node"
+        respawn="true">
+      <param name="deadzone" value="0.2" />
+
+    </node>
 
     <!-- rosbridge -->
     <include
@@ -47,5 +50,10 @@
     <include
       file="$(realsense_ros_camera)/launch/vision_module.launch">
     </include>
+
+    <node pkg="rosserial_python" type="serial_node.py" name="rosserial" output="screen" respawn="true">
+       <param name="port" value="/dev/ttyACM0" />
+       <param name="baud" value="57600" />
+   </node>
 
 </launch>

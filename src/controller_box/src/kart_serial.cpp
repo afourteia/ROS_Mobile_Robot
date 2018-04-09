@@ -6,6 +6,7 @@ UKART::UKART()
 {
 
 	try{
+		ROS_INFO("openning port");
 		ser.setPort("/dev/ttyUSB0");
 		ser.setBaudrate(115200);
 		// ser.setBaudrate(9600);
@@ -124,6 +125,9 @@ int UKART::checkReceivedData()
 			break;
 		default:
 			ROS_DEBUG("Kart Controller has nothing to report");
+			int x = cmdrecieve[CMD];
+			ROS_DEBUG_STREAM(x);
+
 			return 0xFF; // nothing to report
 			break;
 	};

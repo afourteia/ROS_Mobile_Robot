@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 	//ros::Publisher UKARTdiagPub = nh.advertise<controller_box::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
 
 
-	ros::Rate rate(100); // Contoller box sends at 40hz
+	ros::Rate rate(40); // Contoller box sends at 40hz
 	double time_now;
 
 	controller_box::UKARTparams ukartinfo;
@@ -127,13 +127,13 @@ int main(int argc, char **argv)
 
 		//Check Timer and Set the velocity commands
 		time_now = ros::Time::now().toSec();
-		velcmd_receipt_time;
-		if (time_now - velcmd_receipt_time > 1)
-		{
-			linVelcmd = 0;
-			angVelcmd = 0;
-			ROS_WARN_STREAM("It's been over a second since the last velocity command");
-		}
+		// velcmd_receipt_time;
+		// if (time_now - velcmd_receipt_time > 3)
+		// {
+		// 	linVelcmd = 0;
+		// 	angVelcmd = 0;
+		// 	ROS_WARN_STREAM("It's been over a second since the last velocity command");
+		// }
 		kart.setVelocity(linVelcmd,angVelcmd);
 		// Check for other commands
 		kart.beep(beepcmd);

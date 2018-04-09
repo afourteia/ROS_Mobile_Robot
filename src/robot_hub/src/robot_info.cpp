@@ -10,13 +10,14 @@
 MICA::MICA()
 {
 
-  uKartSub = nh.subscribe("Ukart_parameters",1,&MICA::cbUkartInfo, this);		// Subscribe to "kart_velocity" topic
+  // uKartSub = nh.subscribe("Ukart_parameters",1,&MICA::cbUkartInfo, this);		// Subscribe to "kart_velocity" topic
 	guiSub = nh.subscribe("gui_commands",1,&MICA::cbGuiInfo, this);		// Subscribe to "beep_command"
 	xboxController = nh.subscribe("joy",1,&MICA::cbXboxController, this); 	// Subscribe to "IMU_calibrate_command"
 	mcuSub = nh.subscribe("mcu_info",1,&MICA::cbMcuInfo, this); 	// Subscribe to "motor_rls_command"
+	iphonePub = nh.advertise<MICA_message_package::iphone>("iphone_control",1);
 
   // iphoneSub = nh.subscribe("iphone_control",1,&MICA::cbiphonecmd, this);
-  iphoneSub = nh.subscribe("test",1,&MICA::cbiphonecmd, this);
+  iphoneSub = nh.subscribe("iphone_control",1,&MICA::cbiphonecmd, this);
   followSub = nh.subscribe("target_location",1,&MICA::cbfollowcmd, this);
 
 
@@ -32,7 +33,7 @@ MICA::MICA()
 
   //iphonePub = nh.advertise<geometry_msgs::Twist>("test",1);
 
-  iphonePub = nh.advertise<MICA_message_package::iphone>("test",1);
+
 
   follow_state = 1;
 
@@ -42,10 +43,10 @@ MICA::MICA()
   moduleStatus.layout.dim[0].stride = 5;
 }
 
-void MICA::cbUkartInfo(const controller_box::UKARTparams& ukartInfoIncoming)
-{
-  ukartinfo = ukartInfoIncoming;
-}
+// void MICAiphoneSub::cbUkartInfo(const controller_box::UKARTparams& ukartInfoIncoming)
+// {
+//   ukartinfo = ukartInfoIncoming;
+// }
 
 void MICA::cbGuiInfo(const std_msgs::Float32MultiArray& mcuIncoming)
 {
@@ -62,6 +63,12 @@ void MICA::cbXboxController(const sensor_msgs::Joy::ConstPtr& joy)
   {
     vel.linear = static_cast<int>(velScale * joy->axes[1]); // Up/Down Axis stick left
     vel.angular = static_cast<int>(velScale * joy->axes[3]); // Left/right Axis stick right
+		if (vel.angular > 800){
+			vel.angular = 800;
+		}
+		if (vel.angular < -800){
+			vel.angular = -800;
+		}
     velocityPub.publish(vel);
   }
 
@@ -96,6 +103,9 @@ void MICA::cbiphonecmd(const MICA_message_package::iphone& iphoneIncoming){
   moduleStatus.data.push_back(iphoneIncoming.z);
   moduleStatus.data.push_back(iphoneIncoming.h);
   moduleStatus.data.push_back(iphoneIncoming.m);
+	vel.linear = static_cast<int>(iphoneIncoming.l); // Up/Down Axis stick left
+	vel.angular = static_cast<int>(iphoneIncoming.a); // Left/right Axis stick right
+	velocityPub.publish(vel);
 
   mcuPub.publish(moduleStatus);
 }
