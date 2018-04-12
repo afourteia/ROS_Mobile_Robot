@@ -16,18 +16,26 @@ static const std::string FILTER_WINDOW = "filtered window";
 static const std::string CIRCLE_WINDOW = "circles window";
 static const std::string DEPTH_WINDOW = "depth window";
 
-// Blue target
-int HueH = 136;
-int HueL = 123;
-int SatH = 176;
-int SatL = 68;
+// // Blue target (printed)
+// int HueH = 136;
+// int HueL = 123;
+// int SatH = 176;
+// int SatL = 68;
+// int ValH = 255;
+// int ValL = 0;
+
+// Blue target (poster)
+int HueH = 126;
+int HueL = 104;
+int SatH = 255;
+int SatL = 170;
 int ValH = 255;
 int ValL = 0;
 
-int cannyThreshold = 100;
-int accumulatorThreshold = 50;
-int MaxRadiusThreshold = 150;
-int MinRadiusThreshold = 30;
+int cannyThreshold = 40;
+int accumulatorThreshold = 40;
+int MaxRadiusThreshold = 300;
+int MinRadiusThreshold = 10;
 
 int GaussianBlurSigma = 2;
 
