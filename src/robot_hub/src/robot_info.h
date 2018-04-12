@@ -4,7 +4,6 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <ros/console.h>
-#include <ros/console.h>
 #include <std_msgs/Int8.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int16.h>
@@ -12,16 +11,16 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <geometry_msgs/Vector3.h>
-#include "controller_box/UKARTparams.h"
-#include "controller_box/velocity.h"
-#include "MICA_message_package/iphone.h"
+#include <message_package/UKARTparams.h>
+#include <message_package/velocity.h>
+#include <message_package/iphone.h>
 
 class MICA{
   public:
     MICA();
 
 
-    void cbUkartInfo(const controller_box::UKARTparams& ukartInfoIncoming);
+    void cbUkartInfo(const message_package::UKARTparams& ukartInfoIncoming);
 
     void cbGuiInfo(const std_msgs::Float32MultiArray& mcuIncoming);
 
@@ -29,7 +28,7 @@ class MICA{
 
     void cbMcuInfo(const std_msgs::Int8& mcuInfoIncoming);
 
-    void cbiphonecmd(const MICA_message_package::iphone& iphoneIncoming);
+    void cbiphonecmd(const message_package::iphone& iphoneIncoming);
 
     void cbfollowcmd(const geometry_msgs::Vector3& followIncoming);
 
@@ -37,11 +36,11 @@ class MICA{
 
   private:
 
-    controller_box::UKARTparams ukartinfo;
+    message_package::UKARTparams ukartinfo;
     std_msgs::Float32MultiArray mcuinfo;
     geometry_msgs::Vector3 target;
 
-    controller_box::velocity vel;
+    message_package::velocity vel;
 
     std_msgs::Int32MultiArray moduleStatus;
 

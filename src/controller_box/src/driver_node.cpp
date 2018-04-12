@@ -3,8 +3,8 @@
 #include <ros/console.h>
 #include <std_msgs/Int8.h>
 #include "kart_serial.h"
-#include "controller_box/UKARTparams.h"
-#include "controller_box/velocity.h"
+#include "message_package/UKARTparams.h"
+#include "message_package/velocity.h"
 
 //global variables
 int linVelcmd = 0;
@@ -24,7 +24,7 @@ double velcmd_receipt_time;
 UKART kart;
 
 // Velocity commands callback function
-void cbmotorCommands(const controller_box::velocity& vel)
+void cbmotorCommands(const message_package::velocity& vel)
 {
 	linVelcmd = vel.linear;
 	angVelcmd = vel.angular;
@@ -59,7 +59,7 @@ void cbWireControlModeCommands(const std_msgs::Int8& msg)
 {
 	cntlrModecmd = msg.data;
 }
-void loadROSKARTmessage(controller_box::UKARTparams& ukartinfo)
+void loadROSKARTmessage(message_package::UKARTparams& ukartinfo)
 {
 
 	ukartinfo.ctlMode = kart.ctlmodeACK;
@@ -112,15 +112,15 @@ int main(int argc, char **argv)
 
 	ros::Subscriber changeControlModeSub = nh.subscribe("Wire_control_mode",1,&cbWireControlModeCommands); 	// Subscribe to "clear_error_command"
 
-	ros::Publisher UKARTpub = nh.advertise<controller_box::UKARTparams>("Ukart_parameters",1);	// Publish to "Ukart_parameters"
-	//ros::Publisher UKARTdiagPub = nh.advertise<controller_box::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
+	ros::Publisher UKARTpub = nh.advertise<message_package::UKARTparams>("Ukart_parameters",1);	// Publish to "Ukart_parameters"
+	//ros::Publisher UKARTdiagPub = nh.advertise<message_package::UKARTdiag>("UKart_Info",1);		// Publish to "UKart_Info"
 
 
 	ros::Rate rate(40); // Contoller box sends at 40hz
 	double time_now;
 
-	controller_box::UKARTparams ukartinfo;
-	//controller_box::UKARTdiag ukartInfo;
+	message_package::UKARTparams ukartinfo;
+	//message_package::UKARTdiag ukartInfo;
 
 	while(ros::ok())
 	{

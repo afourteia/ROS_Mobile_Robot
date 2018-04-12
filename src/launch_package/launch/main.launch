@@ -11,11 +11,11 @@
 
 
 
-    <node
+    <!-- <node
       pkg="vision_system"
       type="kinect_color_calib"
       name="kinect_color_calib"
-    />
+    /> -->
 
     <node
       pkg="robot_hub"
@@ -47,9 +47,9 @@
     </include>
 
     <!-- Intel D415 realsense camera-->
-    <include
+    <!-- <include
       file="$(realsense_ros_camera)/launch/vision_module.launch">
-    </include>
+    </include> -->
 
     <node pkg="rosserial_python" type="serial_node.py" name="rosserial" output="screen" respawn="true">
        <param name="port" value="/dev/ttyACM0" />
