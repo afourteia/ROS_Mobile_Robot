@@ -209,31 +209,7 @@ public:
     ROS_INFO_STREAM("converting to BGR");
     cv::cvtColor(HSV_filtered, BGR_filtered, CV_HSV2BGR);
 
-    int density = 0;
-    int j = -1;
-    int target_radius;
-    cv::Point target_center;
-    for( size_t i = 0; i < circles.size(); i++ )
-    {
-      ROS_INFO_STREAM("detecting circles");
-       cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-       int radius = cvRound(circles[i][2]);
-       ROS_INFO_STREAM("creating the rectangle");
-       cv::Rect r(center.x-radius, center.y-radius, radius*2, radius*2);
-      /// adding if statements here
-      if((center.x-radius > 0 && center.y-radius > 0 && radius+center.x < HSV_mask.cols && center.y+radius < HSV_mask.rows))
-      {
-        ROS_INFO_STREAM("creating the ROI");
-        cv::Mat roi(HSV_mask, r);
-        cv::Mat roi2(depthOut_->image, r);
-        ROS_INFO_STREAM("density check");
-        int k = (cv::countNonZero(roi)*100.0)/(roi.cols*roi.rows);
-        ROS_INFO_STREAM("Density is " << k);
-        if (density < k)
-        {
-          ROS_INFO_STREAM("in the loooooooooop");
-          density = k;
-          j = i;
+    int density = 0;hgjkghjkghjghd jhgj
           target_center = center;
           target_radius = radius;
           int horizontal = center.x;
