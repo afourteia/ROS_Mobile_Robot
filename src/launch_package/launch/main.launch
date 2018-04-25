@@ -26,8 +26,8 @@
 
     <node
       pkg="controller_box"
-      type="driver_node"
-      name="driver_node"
+      type="controller_box_node"
+      name="controller_box_node"
       respawn="true"
       output="screen"
     />
