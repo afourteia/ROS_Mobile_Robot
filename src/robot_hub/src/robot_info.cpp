@@ -105,6 +105,10 @@ void MICA::cbiphonecmd(const message_package::iphone& iphoneIncoming){
   moduleStatus.data.push_back(iphoneIncoming.z);
   moduleStatus.data.push_back(iphoneIncoming.h);
   moduleStatus.data.push_back(iphoneIncoming.m);
+	moduleStatus.data.push_back(iphoneIncoming.zS);
+	moduleStatus.data.push_back(iphoneIncoming.xS);
+	moduleStatus.data.push_back(iphoneIncoming.yS);
+	moduleStatus.data.push_back(iphoneIncoming.hS);
 	vel.linear = static_cast<int>(iphoneIncoming.l); // Up/Down Axis stick left
 	vel.angular = static_cast<int>(iphoneIncoming.a); // Left/right Axis stick right
 	velocityPub.publish(vel);
